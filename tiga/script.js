@@ -34,7 +34,7 @@ const scenes = [
   `,
   `
     <h1>🎁 Pertunjukan Selesai</h1>
-    <p>Terima kasih udah menyimak 🎂</p>
+    <p>Terima kasih udah liat🎂</p>
     <button onclick="restart()">🔁 Tonton Lagi</button>
   `
 ];
