@@ -1,289 +1,361 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pertunjukan Ulang Tahun 🎉</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Preload Resources -->
-  <link rel="preload" as="audio" href="musik/birthday.mp3" type="audio/mpeg">
-  <link rel="preload" as="image" href="img/ipi_2.jpg">
-  <link rel="preload" as="image" href="img/ipi_3.jpeg">
-  <link rel="preload" as="image" href="img/achievement3.jpg">
-  <link rel="preload" as="image" href="img/achievement.jpg">
-  <link rel="preload" as="image" href="img/birthday-person.jpg">
-  <link rel="preload" as="image" href="img/hope.png">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #fff;
-      color: #e91e63;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
-      text-align: center;
-      padding: 40px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: #e91e63;
-      top: -10px;
-      animation: fall 5s infinite;
-      opacity: 0.7;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(0) rotate(0);
-      }
-      100% {
-        transform: translateY(100vh) rotate(360deg);
-      }
-    }
-
-    #scene {
-      max-width: 600px;
-      animation: fade 1s ease-in-out;
-      z-index: 2;
-    }
-
-    img {
-      max-width: 100%;
-      border-radius: 20px;
-      margin-top: 20px;
-      box-shadow: 0 0 20px rgba(233, 30, 99, 0.2);
-    }
-
-    .bg-birthday {
-      background: url('img/birthday-person.jpg') no-repeat center center;
-      background-size: cover;
-      color: white;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.6);
-      border-radius: 20px;
-      padding: 30px;
-      transition: background 0.6s ease;
-    }
-
-    .fade-out {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    .fade-in {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    .achievement-photos {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-      justify-items: center;
-    }
-
-    .achievement-photos img {
-      width: 100%;
-      height: auto;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s ease;
-    }
-
-    .achievement-photos img:hover {
-      transform: scale(1.05);
-    }
-
-    button {
-      margin-top: 40px;
-      padding: 15px 30px;
-      background: #f8bbd0;
-      color: #e91e63;
-      border: none;
-      border-radius: 25px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      z-index: 2;
-    }
-
-    button:hover {
-      background: #f48fb1;
-    }
-
-    @keyframes fade {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 20px;
-        height: auto;
-        min-height: 100vh;
-      }
-
-      #scene {
-        max-width: 100%;
-      }
-
-      .bg-birthday {
-        padding: 20px;
-        font-size: 0.95rem;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      p {
-        font-size: 1rem;
-      }
-
-      .achievement-photos {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-
-      .achievement-photos img {
-        border-radius: 12px;
-      }
-
-      button {
-        font-size: 0.9rem;
-        padding: 12px 24px;
-        border-radius: 20px;
-        margin-top: 30px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.3rem;
-      }
-
-      p {
-        font-size: 0.95rem;
-      }
-
-      button {
-        width: 100%;
-        padding: 12px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <script>
-    for (let i = 0; i < 20; i++) {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.left = Math.random() * 100 + 'vw';
-      confetti.style.animationDelay = Math.random() * 5 + 's';
-      confetti.style.backgroundColor = ['#e91e63', '#ff9800', '#ffc107', '#8bc34a', '#00bcd4'][Math.floor(Math.random() * 5)];
-      document.body.appendChild(confetti);
-    }
-
-    const preloadAssets = [
-      'img/ipi_2.jpg',
-      'img/ipi_3.jpeg',
-      'img/achievement3.jpg',
-      'img/achievement.jpg',
-      'img/birthday-person.jpg',
-      'img/hope.png',
-      'musik/birthday.mp3'
-    ];
-    preloadAssets.forEach(src => {
-      if (src.endsWith('.mp3')) {
-        const audio = new Audio();
-        audio.src = src;
-      } else {
-        const img = new Image();
-        img.src = src;
-      }
-    });
-  </script>
-
-  <div id="scene"></div>
-  <button onclick="nextScene()">➡️ Lanjut</button>
-
-  <script>
-    let currentScene = 0;
-    const sceneEl = document.getElementById("scene");
-    const nextBtn = document.querySelector("button");
-    const music = new Audio("musik/birthday.mp3");
-    music.loop = true;
-
-    const scenes = [
-      `
-      <div class="bg-birthday">
-        <h1>🎉 Selamat Ulang Tahun! 🎂</h1>
-        <p>Hari ini adalah hari spesialmu. Semoga hari ini penuh tawa, cinta, dan kue! 🍰</p>
-      </div>
-      `,
-      `
-      <h1>🏆 Pencapaianmu</h1>
-      <div class="achievement-photos">
-        <img src="img/ipi_2.jpg" alt="Achievement 1">
-        <img src="img/ipi_3.jpeg" alt="Achievement 2">
-        <img src="img/achievement3.jpg" alt="Achievement 3">
-      </div>
-      <p>Kamu udah banyak banget berkembang tahun ini. Bangga banget sama kamu!</p>
-      <img src="img/achievement.jpg" alt="Pencapaian">
-      `,
-      `
-      <h1>🌈 Harapan untukmu</h1>
-      <p>Semoga tahun depan penuh dengan petualangan baru, rezeki berlimpah, dan teman teman yang supportif.</p>
-      <img src="img/hope.png" alt="Harapan">
-      `,
-      `
-      <h1>🎁 Pertunjukan Selesai</h1>
-      <p>Terima kasih udah menyimak 🎂</p>
-      <button onclick="restart()">🔁 Tonton Lagi</button>
-      `
-    ];
-
-    function nextScene() {
-      sceneEl.classList.remove("fade-in");
-      sceneEl.classList.add("fade-out");
-
-      setTimeout(() => {
-        currentScene++;
-        if (currentScene < scenes.length) {
-          sceneEl.innerHTML = scenes[currentScene];
-          if (currentScene === 1) {
-            music.play().catch(() => {});
-          }
-          if (currentScene === scenes.length - 1) {
-            nextBtn.style.display = "none";
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Silvia 🎉</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fff;
+            --text-color: #e91e63;
+            --button-bg: #f8bbd0;
+            --button-hover: #f48fb1;
+            --confetti-color: #e91e63;
         }
 
-        sceneEl.classList.remove("fade-out");
+        body.dark {
+            --bg-color: #121212;
+            --text-color: #f06292;
+            --button-bg: #4e4e4e;
+            --button-hover: #757575;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            text-align: center;
+            padding: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--confetti-color);
+            top: -10px;
+            animation: fall 5s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0);
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        #scene {
+            max-width: 600px;
+            animation: fade 1s ease-in-out;
+            z-index: 2;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.2);
+        }
+
+        /* .bg-birthday {
+            background: url('ipi.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            transition: background 0.6s ease;
+        } */
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .achievement-photos {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            justify-items: center;
+        }
+
+        .achievement-photos img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .achievement-photos img:hover {
+            transform: scale(1.05);
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .popup.show {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        .popup button {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .popup button:hover {
+            background-color: #f48fb1;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        button:hover {
+            background: var(--button-hover);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            #scene {
+                max-width: 100%;
+            }
+
+            .bg-birthday {
+                
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .achievement-photos img {
+                width: 100%;
+                height: auto;
+                border-radius: 15px;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                transition: transform 0.3s ease;
+            }
+
+            .achievement-photos img:hover {
+                transform: scale(1.05);
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 12px 24px;
+                border-radius: 20px;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            p {
+                font-size: 0.95rem;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        for (let i = 0; i < 20; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDelay = Math.random() * 5 + 's';
+            confetti.style.backgroundColor = ['#e91e63', '#ff9800', '#ffc107', '#8bc34a', '#00bcd4'][Math.floor(Math.random() * 5)];
+            document.body.appendChild(confetti);
+        }
+
+        
+    </script>
+
+    <div id="scene"></div>
+    <div class="button-group">
+        <button id="nextBtn" onclick="nextScene()">➡️ Lanjut</button>
+        <button onclick="toggleDarkMode()">🌓 Mode</button>
+    </div>
+
+    <audio id="bgm" loop autoplay>
+        <source src="audio/happy.mp3" type="audio/mpeg">
+        Browsermu tidak mendukung elemen audio.
+    </audio>
+
+    <script>
+        let currentScene = 0;
+        const sceneEl = document.getElementById("scene");
+        const nextBtn = document.getElementById("nextBtn");
+
+        const scenes = [
+            `
+      <div class="bg-birthday">
+        <h1> Happy Birth Day Silvia! 🎉</h1>
+      </div>
+      `,
+            `
+      <h1>🏆 Pencapaianmu</h1>
+      <p>Kamu udah banyak banget berkembang. Bangga banget sama kamu!</p>
+      <div class="achievement-photos">
+        <img src="ipi_2.jpg" alt="Achievement 1" onclick="openPopup('Pencapaian Pertama')">
+        <img src="ipi_3.jpeg" alt="Achievement 2" onclick="openPopup('Pencapaian Kedua')">
+      </div>
+      `,
+            `
+      <h1>🌈 Harapan untukmu</h1>
+      <p>Semoga tahun depan penuh dengan petualangan baru, rezeki berlimpah, dan teman-teman yang mendukung kamu untuk mencapai cita citamu.</p>
+      <img src="hope.png" alt="Harapan">
+      <h2>Universitas Pendidikan Indonesia</h2>
+      `,
+            `
+      <h1>🎁 Pertunjukan Selesai</h1>
+      <p>Terima kasih udah menyimak 🎂</p>
+      <div style="margin-top:20px">
+        <a href="https://wa.me/?text=Terima%20kasih%20udah%20nonton%20pertunjukan%20ulang%20tahun%20ini!%20🎉%20Semoga%20harimu%20menyenangkan%20ya!" target="_blank">
+          <button>Kirim Ucapan Balik</button>
+        </a>
+        <button onclick="restart()">🔁 Tonton Lagi</button>
+      </div>
+      `
+        ];
+
+        function nextScene() {
+            sceneEl.classList.remove("fade-in");
+            sceneEl.classList.add("fade-out");
+
+            setTimeout(() => {
+                currentScene++;
+                if (currentScene < scenes.length) {
+                    sceneEl.innerHTML = scenes[currentScene];
+                    if (currentScene === scenes.length - 1) {
+                        nextBtn.style.display = "none";
+                    }
+                }
+
+                sceneEl.classList.remove("fade-out");
+                sceneEl.classList.add("fade-in");
+            }, 500);
+        }
+
+        function restart() {
+            currentScene = 0;
+            sceneEl.innerHTML = scenes[0];
+            nextBtn.style.display = "inline-block";
+            sceneEl.classList.add("fade-in");
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+        }
+
+        sceneEl.innerHTML = scenes[0];
         sceneEl.classList.add("fade-in");
-      }, 500);
-    }
-
-    function restart() {
-      currentScene = 0;
-      sceneEl.innerHTML = scenes[0];
-      nextBtn.style.display = "inline-block";
-      sceneEl.classList.add("fade-in");
-    }
-
-    sceneEl.innerHTML = scenes[0];
-    sceneEl.classList.add("fade-in");
-  </script>
+    </script>
 </body>
+
 </html>
