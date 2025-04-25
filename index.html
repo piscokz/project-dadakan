@@ -19,6 +19,44 @@
       --button-bg: #000000;
       --button-hover: #757575;
     }
+    #loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+  }
+
+  #loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 6px solid #f06292;
+    border-top: 6px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    margin-top: 16px;
+    font-weight: bold;
+    color: var(--text-color);
+    font-size: 1.1rem;
+  }
+
     body {
       position: relative;
   margin: 0;
@@ -219,6 +257,11 @@
   </style>
 </head>
 <body>
+  <div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading surprise... 🎉</div>
+  </div>
+  
   <div id="popup" class="popup" onclick="closePopup()">
     <div class="popup-content">
       <h2 id="popup-text"></h2>
@@ -229,8 +272,7 @@
   <div id="scene"></div>
   <div class="button-group">
     <button id="nextBtn" onclick="nextScene()">➜ &nbsp; Lanjut</button>
-    <button onclick="toggleDarkMode()">🌗 &nbsp; Mode</button
-  </div>
+    <button onclick="toggleDarkMode()">🌗 &nbsp; Mode</button</div>
 
   <audio id="bgm" loop>
     <source src="hbd.mp3" type="audio/mpeg">
@@ -251,16 +293,33 @@
     "lucky_cat.svg"
   ];
 
+  let loaded = 0;
+  const total = assets.length;
+
+  const onAssetLoad = () => {
+    loaded++;
+    if (loaded === total) {
+      setTimeout(() => {
+        document.getElementById('loading-screen').classList.add('fade-out');
+        sceneEl.innerHTML = scenes[0];
+        sceneEl.classList.add("fade-in");
+      }, 500);
+    }
+  };
+
   assets.forEach(src => {
     if (src.endsWith(".mp3")) {
       const audio = new Audio();
       audio.src = src;
+      audio.addEventListener('canplaythrough', onAssetLoad, { once: true });
     } else {
       const img = new Image();
       img.src = src;
+      img.onload = onAssetLoad;
     }
   });
 }
+
 
     let currentScene = 0;
     const sceneEl = document.getElementById("scene");
@@ -369,6 +428,11 @@
     }
 
     // Init
+    // Init
+window.addEventListener("DOMContentLoaded", () => {
+  preloadAssets(); // Nunggu semua asset siap
+});
+
     sceneEl.innerHTML = scenes[0];
     sceneEl.classList.add("fade-in");
 
