@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Silvia 🎉</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-color: #fff;
@@ -13,62 +14,70 @@
       --button-hover: #f48fb1;
       --confetti-color: #e91e63;
     }
+
     body.dark {
       --bg-color: #121212;
       --text-color: #f06292;
       --button-bg: #000000;
       --button-hover: #757575;
     }
+
     #loading-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease;
-  }
+      position: fixed;
+      inset: 0;
+      background: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
 
-  #loading-screen.fade-out {
-    opacity: 0;
-    pointer-events: none;
-  }
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 6px solid #f06292;
-    border-top: 6px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 6px solid #f06292;
+      border-top: 6px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
 
-  @keyframes spin {
-    0% { transform: rotate(0); }
-    100% { transform: rotate(360deg); }
-  }
+    @keyframes spin {
+      0% {
+        transform: rotate(0);
+      }
 
-  .loading-text {
-    margin-top: 16px;
-    font-weight: bold;
-    color: var(--text-color);
-    font-size: 1.1rem;
-  }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      margin-top: 16px;
+      font-weight: bold;
+      color: var(--text-color);
+      font-size: 1.1rem;
+    }
 
     body {
       position: relative;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg-color);
-  color: var(--text-color);
-  text-align: center;
-  padding: 40px 20px;
-  min-height: 100vh;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      text-align: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      transition: background 2.5s ease, color 0.6s ease;
+    }
 
     .confetti {
       position: absolute;
@@ -81,23 +90,26 @@
       z-index: 1000;
       animation: fall 5s infinite ease-in;
     }
+
     @keyframes fall {
       0% {
-    transform: translateY(0) rotate(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(calc(100vh + 50px)) rotate(720deg);
-    opacity: 0.5;
-  }
+        transform: translateY(0) rotate(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(calc(100vh + 50px)) rotate(720deg);
+        opacity: 0.5;
+      }
     }
+
     #scene {
-  max-width: 600px;
-  margin: 0 auto;
-  animation: fade 1s ease-in-out;
-  z-index: 2;
-  text-align: center;
-}
+      max-width: 600px;
+      margin: 0 auto;
+      animation: fade 1s ease-in-out;
+      z-index: 2;
+      text-align: center;
+    }
 
     img {
       max-width: 100%;
@@ -105,27 +117,32 @@
       margin-top: 20px;
       box-shadow: 0 0 20px rgba(233, 30, 99, 0.2);
     }
+
     .fade-out {
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
+
     .fade-in {
       opacity: 1;
       transform: translateY(0);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
+
     .achievement-photos {
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
       margin-top: 20px;
     }
+
     .achievement-item {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     .achievement-item img {
       width: 100%;
       height: auto;
@@ -133,13 +150,17 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
       transition: transform 0.3s ease;
     }
+
     .achievement-item img:hover {
       transform: scale(1.05);
     }
 
     .popup {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-color: rgba(0, 0, 0, 0.5);
       display: none;
       justify-content: center;
@@ -166,10 +187,10 @@
     }
 
     .popup-content p {
-  margin-top: 10px;
-  font-size: 1rem;
-  color: #333;
-}
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #333;
+    }
 
 
     .popup button {
@@ -185,6 +206,7 @@
     .popup button:hover {
       background-color: #f48fb1;
     }
+
     button {
       margin-top: 20px;
       padding: 15px 30px;
@@ -198,9 +220,11 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       z-index: 2;
     }
+
     button:hover {
       background: var(--button-hover);
     }
+
     .button-group {
       display: flex;
       gap: 16px;
@@ -208,60 +232,90 @@
       flex-wrap: wrap;
       margin-top: 40px;
     }
+
     @keyframes fade {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     @media (max-width: 768px) {
-      body { padding: 20px; height: auto; min-height: 100vh; }
-      #scene { max-width: 100%; }
-      .bg-birthday { font-size: 0.95rem; }
-      h1 { font-size: 1.5rem; }
-      p { font-size: 1rem; }
-      button { font-size: 0.9rem; padding: 12px 24px; border-radius: 20px; margin-top: 20px; }
+      body {
+        padding: 20px;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      #scene {
+        max-width: 100%;
+      }
+
+      .bg-birthday {
+        font-size: 0.95rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 12px 24px;
+        border-radius: 20px;
+        margin-top: 20px;
+      }
     }
-    
-    /* From Uiverse.io by arthur_6104 */ 
-.box-button {
-  cursor: pointer;
-  border: 4px solid rgb(255, 152, 152);
-  background-color: rgb(255, 192, 192);
-  padding-bottom: 10px;
-  transition: 0.1s ease-in-out;
-  user-select: none;
-}
 
-.button {
-  background-color: #ff9d9d;
-  border: 4px solid #fff;
-  padding: 3px 8px;
-}
+    /* From Uiverse.io by arthur_6104 */
+    .box-button {
+      cursor: pointer;
+      border: 4px solid rgb(255, 152, 152);
+      background-color: rgb(255, 192, 192);
+      padding-bottom: 10px;
+      transition: 0.1s ease-in-out;
+      user-select: none;
+    }
 
-.button span {
-  font-size: 1.2em;
-  letter-spacing: 1px;
-}
+    .button {
+      background-color: #ff9d9d;
+      border: 4px solid #fff;
+      padding: 3px 8px;
+    }
 
-.box-button:active {
-  padding: 0;
-  margin-bottom: 10px;
-  transform: translateY(10px);
-}
+    .button span {
+      font-size: 1.2em;
+      letter-spacing: 1px;
+    }
 
-.teks-hadiah {
-  color: white;
-  font-weight: bolder;
-}
+    .box-button:active {
+      padding: 0;
+      margin-bottom: 10px;
+      transform: translateY(10px);
+    }
 
-
+    .teks-hadiah {
+      color: white;
+      font-weight: bolder;
+    }
   </style>
 </head>
+
 <body>
   <div id="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">Loading surprise... 🎉</div>
   </div>
-  
+
   <div id="popup" class="popup" onclick="closePopup()">
     <div class="popup-content">
       <h2 id="popup-text"></h2>
@@ -272,7 +326,8 @@
   <div id="scene"></div>
   <div class="button-group">
     <button id="nextBtn" onclick="nextScene()">➜ &nbsp; Lanjut</button>
-    <button onclick="toggleDarkMode()">🌗 &nbsp; Mode</button></div>
+    <button onclick="toggleDarkMode()">🌗 &nbsp; Mode</button>
+  </div>
 
   <audio id="bgm" loop>
     <source src="hbd.mp3" type="audio/mpeg">
@@ -281,44 +336,44 @@
 
   <script>
     function preloadAssets() {
-  const assets = [
-    "cake.svg",
-    "cat-1.mp3",
-    "cat-2.mp3",
-    "cat-3.mp3",
-    "hbd.mp3",
-    "hope.png",
-    "ipi_2.jpg",
-    "ipi_3.jpeg",
-    "lucky_cat.svg"
-  ];
+      const assets = [
+        "cake.svg",
+        "cat-1.mp3",
+        "cat-2.mp3",
+        "cat-3.mp3",
+        "hbd.mp3",
+        "hope.png",
+        "ipi_2.jpg",
+        "ipi_3.jpeg",
+        "lucky_cat.svg"
+      ];
 
-  let loaded = 0;
-  const total = assets.length;
+      let loaded = 0;
+      const total = assets.length;
 
-  const onAssetLoad = () => {
-    loaded++;
-    if (loaded === total) {
-      setTimeout(() => {
-        document.getElementById('loading-screen').classList.add('fade-out');
-        sceneEl.innerHTML = scenes[0];
-        sceneEl.classList.add("fade-in");
-      }, 500);
+      const onAssetLoad = () => {
+        loaded++;
+        if (loaded === total) {
+          setTimeout(() => {
+            document.getElementById('loading-screen').classList.add('fade-out');
+            sceneEl.innerHTML = scenes[0];
+            sceneEl.classList.add("fade-in");
+          }, 500);
+        }
+      };
+
+      assets.forEach(src => {
+        if (src.endsWith(".mp3")) {
+          const audio = new Audio();
+          audio.src = src;
+          audio.addEventListener('canplaythrough', onAssetLoad, { once: true });
+        } else {
+          const img = new Image();
+          img.src = src;
+          img.onload = onAssetLoad;
+        }
+      });
     }
-  };
-
-  assets.forEach(src => {
-    if (src.endsWith(".mp3")) {
-      const audio = new Audio();
-      audio.src = src;
-      audio.addEventListener('canplaythrough', onAssetLoad, { once: true });
-    } else {
-      const img = new Image();
-      img.src = src;
-      img.onload = onAssetLoad;
-    }
-  });
-}
 
 
     let currentScene = 0;
@@ -326,7 +381,7 @@
     const nextBtn = document.getElementById("nextBtn");
 
     const scenes = [
-      `<div class="bg-birthday"></div>`,
+      `<div class=" "></div>`,
       `<div class="bg-birthday"><h1> Happy Birth Day Silvia! 🎉</h1></div>`,
       `
       <h1>🏆 Pencapaianmu</h1>
@@ -370,7 +425,7 @@
     function nextScene() {
       if (!isMusicPlaying) {
         const bgm = document.getElementById('bgm');
-        bgm.play().catch(() => {});
+        bgm.play().catch(() => { });
         isMusicPlaying = true;
       }
 
@@ -404,12 +459,12 @@
     }
 
     function openPopup(title, description) {
-  document.getElementById("popup-text").innerHTML = `
+      document.getElementById("popup-text").innerHTML = `
     <h2>${title}</h2>
     <p>${description}</p>
   `;
-  document.getElementById("popup").classList.add("show");
-}
+      document.getElementById("popup").classList.add("show");
+    }
 
 
     function closePopup() {
@@ -429,64 +484,65 @@
 
     // Init
     // Init
-window.addEventListener("DOMContentLoaded", () => {
-  preloadAssets(); // Nunggu semua asset siap
-});
+    window.addEventListener("DOMContentLoaded", () => {
+      preloadAssets(); // Nunggu semua asset siap
+    });
 
     sceneEl.innerHTML = scenes[0];
     sceneEl.classList.add("fade-in");
 
-    document.addEventListener("click", function(e) {
-  if (e.target.closest(".box-button")) {
-    showCatConfetti();
-  }
-});
+    document.addEventListener("click", function (e) {
+      if (e.target.closest(".box-button")) {
+        showCatConfetti();
+      }
+    });
 
-function showCatConfetti() {
-  const catSounds = [
-    "cat-1.mp3", // Ganti dengan URL audio kucing pertama
-    "cat-2.mp3", // Ganti dengan URL audio kucing kedua
-    "cat-3.mp3"  // Ganti dengan URL audio kucing ketiga
-  ];
+    function showCatConfetti() {
+      const catSounds = [
+        "cat-1.mp3", // Ganti dengan URL audio kucing pertama
+        "cat-2.mp3", // Ganti dengan URL audio kucing kedua
+        "cat-3.mp3"  // Ganti dengan URL audio kucing ketiga
+      ];
 
-  // Pilih audio kucing secara acak
-  const randomCatSound = catSounds[Math.floor(Math.random() * catSounds.length)];
+      // Pilih audio kucing secara acak
+      const randomCatSound = catSounds[Math.floor(Math.random() * catSounds.length)];
 
-  // Membuat elemen audio dan memutar suara kucing
-  const audio = new Audio(randomCatSound);
-  audio.play();
+      // Membuat elemen audio dan memutar suara kucing
+      const audio = new Audio(randomCatSound);
+      audio.play();
 
-  const img = document.createElement("img");
-  img.src = "lucky_cat.svg"; // bisa ganti ke gif lain kalau mau!
-  img.alt = "Confetti Kucing";
-  img.style.position = "fixed";
-  img.style.width = "80px";
-  img.style.left = Math.random() * 90 + "vw";
-  img.style.top = "-100px";
-  img.style.zIndex = 10;
-  img.style.animation = "dropCat 3s ease-in-out forwards";
+      const img = document.createElement("img");
+      img.src = "lucky_cat.svg"; // bisa ganti ke gif lain kalau mau!
+      img.alt = "Confetti Kucing";
+      img.style.position = "fixed";
+      img.style.width = "80px";
+      img.style.left = Math.random() * 90 + "vw";
+      img.style.top = "-100px";
+      img.style.zIndex = 10;
+      img.style.animation = "dropCat 3s ease-in-out forwards";
 
-  document.body.appendChild(img);
+      document.body.appendChild(img);
 
-  // hapus elemen setelah selesai animasi
-  setTimeout(() => img.remove(), 3000);
-}
+      // hapus elemen setelah selesai animasi
+      setTimeout(() => img.remove(), 3000);
+    }
 
 
-// Animasi jatuh kucing
-const style = document.createElement("style");
-style.textContent = `
+    // Animasi jatuh kucing
+    const style = document.createElement("style");
+    style.textContent = `
   @keyframes dropCat {
     0% { transform: translateY(0); opacity: 0.9; }
     100% { transform: translateY(100vh); opacity: 0; }
   }
 `;
-document.head.appendChild(style);
+    document.head.appendChild(style);
 
-window.addEventListener("DOMContentLoaded", () => {
-  preloadAssets();
-});
+    window.addEventListener("DOMContentLoaded", () => {
+      preloadAssets();
+    });
 
   </script>
 </body>
+
 </html>
