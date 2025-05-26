@@ -345,7 +345,8 @@
         "hope.png",
         "ipi_2.jpg",
         "ipi_3.jpeg",
-        "lucky_cat.svg"
+        "lucky_cat.svg",
+        "yipi.mp3"
       ];
 
       let loaded = 0;
@@ -506,9 +507,14 @@
 
       // Pilih audio kucing secara acak
       const randomCatSound = catSounds[Math.floor(Math.random() * catSounds.length)];
-
       // Membuat elemen audio dan memutar suara kucing
-      const audio = new Audio(randomCatSound);
+      // const audio = new Audio(randomCatSound);
+      const audio = new Audio("yipi.mp3");
+      // Tunggu sampai audio siap
+      audio.addEventListener('loadedmetadata', () => {
+      audio.currentTime = 1; // mulai dari detik ke-5
+      audio.play();
+});
       audio.play();
 
       const img = document.createElement("img");
