@@ -58,7 +58,7 @@
       }
     }
 
-    .loading-text { 
+    .loading-text {
       margin-top: 16px;
       font-weight: bold;
       color: var(--text-color);
@@ -79,7 +79,7 @@
       transition: background 2.5s ease, color 0.6s ease;
     }
 
-    .confetti {
+    /* .confetti {
       position: absolute;
       width: 10px;
       height: 10px;
@@ -89,9 +89,23 @@
       opacity: 0.7;
       z-index: 1000;
       animation: fall 5s infinite ease-in;
+    } */
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--confetti-color);
+      top: -10px;
+      animation: fall 5s infinite ease-in;
+      opacity: 0.7;
+      z-index: 1000;
+      pointer-events: none;
     }
 
-    @keyframes fall {
+
+
+    /* @keyframes fall {
       0% {
         transform: translateY(0) rotate(0);
         opacity: 1;
@@ -101,7 +115,21 @@
         transform: translateY(calc(100vh + 50px)) rotate(720deg);
         opacity: 0.5;
       }
+    } */
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(200vh) rotate(720deg);
+        /* biar confetti jalan terus walau scroll */
+        opacity: 0.5;
+      }
     }
+
 
     #scene {
       max-width: 600px;
@@ -476,6 +504,17 @@
       document.getElementById("popup").classList.remove("show");
     }
 
+    // function showConfetti() {
+    //   for (let i = 0; i < 20; i++) {
+    //     const confetti = document.createElement('div');
+    //     confetti.className = 'confetti';
+    //     confetti.style.left = Math.random() * 100 + 'vw';
+    //     confetti.style.animationDelay = Math.random() * 5 + 's';
+    //     confetti.style.backgroundColor = ['#e91e63', '#ff9800', '#ffc107', '#8bc34a', '#00bcd4'][Math.floor(Math.random() * 5)];
+    //     document.body.appendChild(confetti);
+    //   }
+    // }
+
     function showConfetti() {
       for (let i = 0; i < 20; i++) {
         const confetti = document.createElement('div');
@@ -483,11 +522,16 @@
         confetti.style.left = Math.random() * 100 + 'vw';
         confetti.style.animationDelay = Math.random() * 5 + 's';
         confetti.style.backgroundColor = ['#e91e63', '#ff9800', '#ffc107', '#8bc34a', '#00bcd4'][Math.floor(Math.random() * 5)];
+
         document.body.appendChild(confetti);
+
+        // Hapus confetti setelah animasi selesai
+        setTimeout(() => confetti.remove(), 6000);
       }
     }
 
-    // Init
+
+
     // Init
     window.addEventListener("DOMContentLoaded", () => {
       preloadAssets(); // Nunggu semua asset siap
