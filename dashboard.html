@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Silvia's Dashboard ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+    <!-- Password Overlay -->
+    <div id="password-overlay" class="password-overlay">
+        <div class="password-box">
+            <h2>🔒 Locked for Silvia</h2>
+            <p>Masukkan password rahasia untuk masuk ke safe space ini.</p>
+            <input type="password" id="password-input" placeholder="Password...">
+            <button onclick="checkPassword()">Buka 🗝️</button>
+            <p id="password-error" style="color: red; display: none;">Password salah! Coba lagi.</p>
+        </div>
+    </div>
+
+    <!-- Background Animation Layer -->
+    <div id="bg-animation" class="bg-animation"></div>
+
+    <!-- Audio Elements (Placeholder) -->
+    <!-- Ganti 'src' dengan file musik kamu sendiri -->
+    <audio id="bgm-happy" loop src="music/happy.mp3"></audio>
+    <audio id="bgm-calm" loop src="music/calm.mp3"></audio>
+    <audio id="bgm-tired" loop src="music/tired.mp3"></audio>
+    <audio id="bgm-sad" loop src="music/sad.mp3"></audio>
+    <audio id="sfx-click" src="music/click.mp3"></audio>
+    <audio id="sfx-rain" loop src="music/rain.mp3"></audio>
+    <audio id="sfx-rain" loop src="music/rain.mp3"></audio>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Hi, Silvia! 💖</h1>
+            <p>Welcome to your safe space ✨</p>
+        </header>
+
+        <section class="mood-section">
+            <h2>How are you feeling today?</h2>
+            <div class="mood-tracker">
+                <button class="mood-btn" onclick="selectMood('happy')">😆 Happy</button>
+                <button class="mood-btn" onclick="selectMood('calm')">😌 Calm</button>
+                <button class="mood-btn" onclick="selectMood('tired')">😴 Tired</button>
+                <button class="mood-btn" onclick="selectMood('sad')">🥺 Sad</button>
+            </div>
+            <p id="mood-message"></p>
+        </section>
+
+        <section class="affirmation-section">
+            <div class="affirmation-card">
+                <h3>✨ Daily Affirmation ✨</h3>
+                <p id="affirmation-text">"You are capable of amazing things."</p>
+                <!-- Tombol New Quote dihapus sesuai request -->
+            </div>
+        </section>
+
+        <section class="gallery-section">
+            <h2>Mini Gallery 📸</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="ipi_4.jpg" alt="Memory 1"></div>
+                <div class="gallery-item"><img src="ipi_2.jpg" alt="Memory 2"></div>
+                <div class="gallery-item"><img src="ipi_3.jpeg" alt="Memory 3"></div>
+                <div class="gallery-item"><img src="hope.png" alt="Memory 4"></div>
+            </div>
+        </section>
+
+        <div class="back-home">
+            <a href="index.html"><button>⬅️ Back to Surprise</button></a>
+        </div>
+    </div>
+
+    <script>
+        // --- KONFIGURASI PASSWORD ---
+        const SECRET_PASSWORD = "ultah"; // <--- GANTI PASSWORD DI SINI
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const overlay = document.getElementById('password-overlay');
+            const errorMsg = document.getElementById('password-error');
+
+            if (input === SECRET_PASSWORD) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+                // Play default BGM if needed or wait for mood selection
+            } else {
+                errorMsg.style.display = 'block';
+                // Shake animation effect
+                const box = document.querySelector('.password-box');
+                box.classList.add('shake');
+                setTimeout(() => box.classList.remove('shake'), 500);
+            }
+        }
+
+        // Database Quotes "AI"
+        const quotesDb = {
+            happy: [
+                "Senyummu itu nular loh! Teruslah bersinar! ✨",
+                "Energi positifmu hari ini luar biasa! Pertahankan! 🚀",
+                "Dunia butuh lebih banyak orang sepertimu. 💖",
+                "Hari ini adalah hari yang tepat untuk membuat keajaiban! 🌟",
+                "Kamu terlihat sangat bahagia, dan itu membuatku ikut bahagia! 😊"
+            ],
+            calm: [
+                "Tarik napas dalam-dalam, hembuskan perlahan... 🍃",
+                "Ketenangan adalah kekuatan supermu hari ini. 🧘‍♀️",
+                "Nikmati setiap detik kedamaian ini. Kamu pantas mendapatkannya. 🍵",
+                "Semuanya berjalan sesuai waktunya. Percayalah pada prosesnya. 🌊",
+                "Hati yang tenang melihat dunia dengan lebih jernih. 🕊️"
+            ],
+            tired: [
+                "Hei, gapapa kok buat istirahat. Kamu bukan robot. 🤖💤",
+                "Recharge dulu energinya. Besok kita gas lagi! ⚡",
+                "Tidur yang cukup adalah bentuk self-love terbaik saat ini. 🛌",
+                "Kamu sudah berusaha keras. Bangga banget sama kamu! 🏆",
+                "Dunia gak akan runtuh kalau kamu rebahan sebentar. 🛋️"
+            ],
+            sad: [
+                "Gapapa kalau lagi sedih. Keluarin aja semuanya. 🌧️",
+                "Ingat ya, badai pasti berlalu. Pelangi nunggu di ujung sana. 🌈",
+                "Aku di sini, mengirim peluk virtual buat kamu. 🫂",
+                "Kamu lebih kuat dari yang kamu kira. Bertahan ya! 💪",
+                "Hari yang berat bukan berarti hidup yang buruk. Besok harapan baru. 🌅"
+            ],
+            default: [
+                "Kamu itu unik dan berharga. Jangan lupa itu! 💎",
+                "Setiap langkah kecil membawamu lebih dekat ke tujuan. 👣",
+                "Jadilah alasan seseorang tersenyum hari ini. 😊",
+                "Keajaiban ada di mana-mana, coba lihat sekelilingmu. ✨"
+            ]
+        };
+
+        let currentMood = 'default';
+        let isTyping = false;
+        let currentAudio = null;
+
+        function typeWriter(text, elementId, speed = 50) {
+            if (isTyping) return; // Prevent overlapping
+            isTyping = true;
+            const element = document.getElementById(elementId);
+            element.innerHTML = "";
+            let i = 0;
+
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    isTyping = false;
+                }
+            }
+            type();
+        }
+
+        function getQuote(mood) {
+            const pool = quotesDb[mood] || quotesDb['default'];
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            return pool[randomIndex];
+        }
+
+        function newAffirmation() {
+            if (isTyping) return;
+            const quote = getQuote(currentMood);
+            typeWriter(`"${quote}"`, 'affirmation-text');
+        }
+
+        let currentPlayingMood = null;
+
+        function playMoodAudio(mood) {
+            // Always play Click SFX
+            const sfx = document.getElementById('sfx-click');
+            if (sfx) sfx.play().catch(e => console.log("Audio play failed"));
+
+            // If same mood is already playing, don't restart BGM
+            if (currentPlayingMood === mood) return;
+
+            // Stop current audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            // Stop Rain SFX if playing
+            const rainSfx = document.getElementById('sfx-rain');
+            if (rainSfx) {
+                rainSfx.pause();
+                rainSfx.currentTime = 0;
+            }
+
+            // Play new BGM
+            const bgmId = `bgm-${mood}`;
+            const bgm = document.getElementById(bgmId);
+            if (bgm) {
+                bgm.volume = 0.5;
+                bgm.play().catch(e => console.log("Audio play failed"));
+                currentAudio = bgm;
+            }
+
+            // Play Rain SFX specifically for Sad mood
+            if (mood === 'sad' && rainSfx) {
+                rainSfx.volume = 0.6;
+                rainSfx.play().catch(e => console.log("Rain SFX failed"));
+            }
+
+            currentPlayingMood = mood;
+        }
+
+        function setMoodBackground(mood) {
+            const body = document.body;
+            const bgAnim = document.getElementById('bg-animation');
+
+            // Reset classes
+            body.className = 'dashboard-body';
+            bgAnim.className = 'bg-animation';
+
+            // Add mood class
+            body.classList.add(`mood-${mood}`);
+            bgAnim.classList.add(`anim-${mood}`);
+        }
+
+        function selectMood(mood) {
+            currentMood = mood;
+            const msg = document.getElementById('mood-message');
+
+            // Mood reaction text
+            if (mood === 'happy') msg.innerText = "Seneng banget liat kamu happy! ☀️";
+            else if (mood === 'calm') msg.innerText = "Adem banget ya rasanya... 🍃";
+            else if (mood === 'tired') msg.innerText = "Sini, istirahat dulu yuk. 💤";
+            else if (mood === 'sad') msg.innerText = "Peluk jauh buat kamu... 🫂";
+
+            // Reset active class
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Trigger features
+            newAffirmation();
+            playMoodAudio(mood);
+            setMoodBackground(mood);
+        }
+    </script>
+</body>
+
+</html>
