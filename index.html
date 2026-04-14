@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Spesial untuk Silvia 🎉</title>
+    <title>The Last One</title>
     <meta id="meta-theme-color" name="theme-color" content="#c2e9fb" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
 
@@ -24,14 +24,13 @@
         font-family: "Poppins", sans-serif;
         background: var(--bg-gradient);
         color: var(--text-color);
-        /* MENGGUNAKAN DVH DAN PENCEGAH SCROLL */
         height: 100dvh;
         width: 100vw;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         transition: background 1.5s ease-in-out, color 1.5s ease-in-out;
-        -webkit-tap-highlight-color: transparent; /* Hilangkan efek biru saat tap di HP */
+        -webkit-tap-highlight-color: transparent;
       }
 
       /* ================= EFEK VISUAL LATAR ================= */
@@ -49,35 +48,43 @@
       #celestial-container {
         position: absolute; top: 0; left: 0; right: 0; height: 100px; pointer-events: none; z-index: 10;
       }
-      .celestial {
-        position: absolute; top: 20px; transition: opacity 1.5s ease, transform 1.5s ease;
-      }
+      .celestial { position: absolute; top: 20px; transition: opacity 1.5s ease, transform 1.5s ease; }
       #moonCanvas { left: 20px; }
       #sunCanvas { right: 20px; }
 
-      /* ================= LAYAR LOGIN ================= */
+      /* ================= LAYAR POPUP, LOGIN, LOADING ================= */
       .overlay-screen {
         position: absolute; top: 0; left: 0; right: 0; bottom: 0;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         z-index: 100; text-align: center; padding: 20px;
-        background: var(--bg-gradient); transition: background 1.5s ease-in-out;
+        background: var(--bg-gradient); transition: background 1.5s ease-in-out, opacity 0.5s ease;
       }
 
-      .login-box {
+      #ux-popup { z-index: 200; }
+
+      .box-container {
         background: var(--box-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);
         transition: background 1.5s ease, box-shadow 1.5s ease;
       }
 
-      .login-box h2 {
+      .box-container h2 {
         margin-bottom: 5px; font-size: 26px;
         color: var(--heading-color); text-shadow: var(--heading-glow);
         transition: color 1.5s ease, text-shadow 1.5s ease;
       }
-      .login-box p { margin-bottom: 25px; font-size: 13px; opacity: 0.8; }
+      .box-container p { margin-bottom: 25px; font-size: 13px; opacity: 0.8; line-height: 1.5; }
+
+      .btn-primary {
+        background-color: var(--heading-color); color: white; border: none;
+        padding: 12px 25px; border-radius: 12px; font-size: 16px; font-weight: 600;
+        font-family: "Poppins", sans-serif; cursor: pointer;
+        box-shadow: var(--heading-glow); transition: 0.3s; width: 100%;
+      }
+      .btn-primary:hover { transform: translateY(-3px); filter: brightness(1.1); }
 
       .pin-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; z-index: 110; }
-
+      
       .pin-box {
         width: 50px; height: 60px; font-size: 24px; text-align: center;
         border: 2px solid var(--border-color); border-radius: 12px; outline: none;
@@ -86,7 +93,9 @@
       }
       .pin-box:focus { border-color: var(--heading-color); transform: translateY(-3px); }
       .pin-separator { font-size: 20px; opacity: 0.5; font-weight: bold; margin: 0 2px; }
-      .error-text { color: #ff4d4d; font-size: 13px; height: 20px; opacity: 0; transition: opacity 0.3s; margin-top: 10px; font-weight: 600; }
+      
+      /* Visibilitas ditambahkan agar benar-benar hilang dan tidak muncul "hantu" */
+      .error-text { color: #ff4d4d; font-size: 13px; height: 20px; opacity: 0; visibility: hidden; transition: opacity 0.3s; margin-top: 10px; font-weight: 600; }
 
       @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
       .shake { animation: shake 0.4s ease-in-out; }
@@ -100,30 +109,37 @@
       /* ================= TATA LETAK PPT ================= */
       #ppt-container {
         flex-grow: 1; position: relative; width: 100%; height: calc(100dvh - 70px);
-        display: none; z-index: 20; overflow-y: auto; /* Memungkinkan konten discroll jika benar-benar kepanjangan di HP mini */
+        display: none; z-index: 20; overflow: hidden;
       }
 
       .slide {
-        position: absolute; top: 0; left: 0; right: 0; bottom: 0; min-height: 100%;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        padding: 30px 20px; text-align: center; opacity: 0; visibility: hidden;
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
+        padding: 40px 20px; text-align: center; opacity: 0; visibility: hidden;
         transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; transform: translateY(20px);
+        overflow-y: auto;
       }
       .slide.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+      .slide-content { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; margin: auto; }
 
       .slide h1, .slide h2 {
         font-size: 2.2rem; margin-bottom: 15px;
         color: var(--heading-color); text-shadow: var(--heading-glow);
         transition: color 1.5s ease, text-shadow 1.5s ease;
       }
-      .slide p { font-size: 1.1rem; line-height: 1.5; max-width: 600px; z-index: 5;}
-      .slide img { max-width: 80%; max-height: 25vh; object-fit: cover; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); z-index: 5;}
+      .slide p { font-size: 1rem; line-height: 1.6; width: 100%; z-index: 5; margin-bottom: 20px; }
+      
+      .slide img { 
+        max-width: 100%; max-height: 35vh; object-fit: cover; border-radius: 15px; 
+        margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); z-index: 5;
+      }
 
       /* ================= FOOTER NAVIGASI ================= */
       #footer-nav {
         height: 70px; min-height: 70px; background: var(--footer-bg); border-top: 1px solid var(--border-color);
         display: none; align-items: center; justify-content: space-between; padding: 0 20px;
-        backdrop-filter: blur(5px); z-index: 50; padding-bottom: env(safe-area-inset-bottom); /* Fix untuk iPhone/Gesture Bar */
+        backdrop-filter: blur(5px); z-index: 50; padding-bottom: env(safe-area-inset-bottom);
         transition: background 1.5s ease, border-color 1.5s ease;
       }
 
@@ -131,29 +147,28 @@
         background-color: transparent; color: var(--heading-color); border: 2px solid var(--heading-color);
         border-radius: 50%; width: 40px; height: 40px; font-size: 18px; font-weight: bold;
         cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        flex-shrink: 0;
       }
       .nav-btn:hover { background-color: var(--heading-color); color: white; box-shadow: var(--heading-glow); }
       .nav-btn:disabled { border-color: gray; color: gray; cursor: not-allowed; background-color: transparent; opacity: 0.5; box-shadow: none; }
 
-      .simulator-control { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+      .simulator-control { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-grow: 1; padding: 0 10px;}
       .simulator-control span { font-size: 11px; font-weight: 600; opacity: 0.8; white-space: nowrap; }
-      .simulator-control input[type="range"] { width: 100px; accent-color: var(--heading-color); cursor: pointer; transition: accent-color 1.5s ease; }
+      .simulator-control input[type="range"] { width: 100%; max-width: 150px; accent-color: var(--heading-color); cursor: pointer; transition: accent-color 1.5s ease; }
 
-      /* ================= MEDIA QUERIES (RESPONSIVE KHUSUS MOBILE) ================= */
+      /* ================= MEDIA QUERIES ================= */
       @media (max-width: 480px) {
-        .login-box { padding: 25px 15px; }
-        .login-box h2 { font-size: 22px; }
+        .box-container { padding: 25px 15px; }
+        .box-container h2 { font-size: 22px; }
         .pin-box { width: 45px; height: 55px; font-size: 22px; }
         .slide h1, .slide h2 { font-size: 1.8rem; }
-        .slide p { font-size: 1rem; }
-        .simulator-control input[type="range"] { width: 80px; }
+        .slide p { font-size: 0.95rem; }
         #celestial-container { height: 80px; }
         .celestial { top: 10px; width: 60px; height: 60px; }
       }
-      /* Aturan untuk HP dengan layar sangat pendek */
       @media (max-height: 600px) {
-        #celestial-container { display: none; /* Sembunyikan bulan/matahari agar tidak menutupi konten utama */ }
-        .login-box { margin-top: -30px; }
+        #celestial-container { display: none; }
+        .box-container { margin-top: -30px; }
       }
     </style>
   </head>
@@ -166,40 +181,58 @@
       <canvas id="sunCanvas" class="celestial" width="80" height="80"></canvas>
     </div>
 
-    <div id="login-screen" class="overlay-screen">
-      <div class="login-box">
+    <div id="ux-popup" class="overlay-screen">
+      <div class="box-container">
+        <h2>Tunggu Sebentar! 🛑</h2>
+        <p style="margin-bottom: 20px;">
+          Agar suara, lagu, dan animasi kado ini berjalan sempurna, sangat disarankan membukanya lewat <b>Browser Utama (Chrome)</b> ya.<br><br>
+          copy <i>https://piscokz.github.io/project-dadakan/</i>
+        </p>
+        <button class="btn-primary" onclick="tutupPopup()">Oke, Mengerti! ✨</button>
+      </div>
+    </div>
+
+    <div id="login-screen" class="overlay-screen" style="z-index: 100;">
+      <div class="box-container">
         <h2>Hai! Siapa ini? 👀</h2>
         <p>Masukkan <b>Tanggal</b> dan <b>Bulan</b> lahirmu.<br />(Contoh: 26 Desember = 2612)</p>
         <div class="pin-container" id="pin-container">
-          <input type="tel" class="pin-box" maxlength="1" onkeyup="moveToNext(event, this, 0)" autofocus />
-          <input type="tel" class="pin-box" maxlength="1" onkeyup="moveToNext(event, this, 1)" />
-          <span class="pin-separator">/</span>
-          <input type="tel" class="pin-box" maxlength="1" onkeyup="moveToNext(event, this, 2)" />
-          <input type="tel" class="pin-box" maxlength="1" onkeyup="moveToNext(event, this, 3)" />
+          <input type="tel" class="pin-box" maxlength="1" id="pin-0" oninput="handleInput(this, 0)" onkeydown="handleBackspace(event, 0)" />
+          <input type="tel" class="pin-box" maxlength="1" id="pin-1" oninput="handleInput(this, 1)" onkeydown="handleBackspace(event, 1)" />
+          <span class="pin-separator">-</span>
+          <input type="tel" class="pin-box" maxlength="1" id="pin-2" oninput="handleInput(this, 2)" onkeydown="handleBackspace(event, 2)" />
+          <input type="tel" class="pin-box" maxlength="1" id="pin-3" oninput="handleInput(this, 3)" onkeydown="handleBackspace(event, 3)" />
         </div>
         <p id="error-msg" class="error-text">Ups! Salah, coba ingat lagi ya! 🤭</p>
       </div>
     </div>
 
-    <div id="loading-screen" class="overlay-screen" style="display: none">
+    <div id="loading-screen" class="overlay-screen" style="display: none; z-index: 100;">
       <div class="loading-spinner"></div>
       <div class="loading-text" style="font-size: 16px; font-weight: 600">Membuka kado... 🎉</div>
     </div>
 
     <div id="ppt-container">
       <div class="slide active" id="slide-0">
-        <h1>Halo, Silvia ✨</h1>
-        <p>Aku punya sedikit presentasi kecil. Klik panah di bawah ya</p>
+        <div class="slide-content">
+          <h1>Halo, Silvia ✨</h1>
+          <p>Aku punya sedikit presentasi kecil. Klik panah di bawah ya</p>
+        </div>
       </div>
+      
       <div class="slide" id="slide-1">
-        <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Kue" />
-        <h2>Selamat Ulang Tahun 🎂</h2>
-        <br />
-        <p>Semoga di perkuliahan nanti, kamu semakin bahagia, sehat selalu, serta diberi lingkungan pertemanan yang baik.</p>
+        <div class="slide-content">
+          <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Kue" />
+          <h2>Selamat Ulang Tahun 🎂</h2>
+          <p>Semoga di perkuliahan nanti, kamu semakin bahagia, sehat selalu, serta diberi lingkungan pertemanan yang baik.
+        </div>
       </div>
+      
       <div class="slide" id="slide-2">
-        <h1><i>Yeeeayy!</i> &nbsp;🥳</h1>
-        <p>Jangan lupa habbit baca buku nya dan jangan pikir hasil studi akademik kamu sia-sia yaa ~~ Thankssss!!</p>
+         <div class="slide-content">
+          <h1><i>Yeeeayy!</i> &nbsp;🥳</h1>
+          <p>Jangan lupa habbit baca buku nya dan jangan pikir hasil studi akademik kamu sia-sia yaa ~~ Thankssss!!</p>
+         </div>
       </div>
     </div>
 
@@ -215,6 +248,15 @@
     <audio id="bgm" loop><source src="bg.mp3" type="audio/mpeg" /></audio>
 
     <script>
+      function tutupPopup() {
+        const popup = document.getElementById('ux-popup');
+        popup.style.opacity = '0';
+        setTimeout(() => {
+          popup.style.display = 'none';
+          document.getElementById('pin-0').focus(); // Fokus otomatis ke kotak pertama setelah pop-up hilang
+        }, 500);
+      }
+
       function gambarMatahari() {
         const ctx = document.getElementById("sunCanvas").getContext("2d");
         ctx.clearRect(0, 0, 80, 80); ctx.translate(40, 40); ctx.strokeStyle = "#FFD700"; ctx.lineWidth = 3;
@@ -326,50 +368,71 @@
       timeSlider.value = currentHour;
       updateWaktuLingkungan(currentHour);
 
-      timeSlider.addEventListener("input", (e) => {
-        updateWaktuLingkungan(parseInt(e.target.value));
-      });
+      timeSlider.addEventListener("input", (e) => { updateWaktuLingkungan(parseInt(e.target.value)); });
 
-      const PASSWORD_BENAR = "2404";
-      function moveToNext(event, input, index) {
-        const inputs = document.querySelectorAll(".pin-box");
+      const PW = "2404";
+      const inputs = document.querySelectorAll(".pin-box");
+
+      // LOGIKA BARU YANG ANTI-ERROR DI HP
+      function handleInput(input, index) {
         const errorMsg = document.getElementById("error-msg");
+        
+        // Sembunyikan error begitu user mulai ngetik lagi
         errorMsg.style.opacity = "0";
+        errorMsg.style.visibility = "hidden";
 
-        if (event.key === "Backspace" && index > 0 && input.value === "") {
-          inputs[index - 1].focus(); return;
-        }
+        // Filter: Hanya angka yang boleh masuk
+        input.value = input.value.replace(/[^0-9]/g, "");
+
         if (input.value !== "") {
-          if (index < 3) inputs[index + 1].focus();
-          else cekPassword();
+          if (index < 3) {
+            inputs[index + 1].focus();
+          } else {
+            cekPassword();
+          }
+        }
+      }
+
+      // Memungkinkan tombol "Hapus / Backspace" mundur ke kotak sebelumnya
+      function handleBackspace(event, index) {
+        if (event.key === "Backspace" && inputs[index].value === "") {
+          if (index > 0) {
+            inputs[index - 1].focus();
+          }
         }
       }
 
       function cekPassword() {
-        const inputs = document.querySelectorAll(".pin-box");
-        let pinMasuk = ""; inputs.forEach((input) => (pinMasuk += input.value));
+        let pinMasuk = ""; 
+        inputs.forEach((input) => (pinMasuk += input.value));
         const errorMsg = document.getElementById("error-msg");
         const pinContainer = document.getElementById("pin-container");
 
-        if (pinMasuk === PASSWORD_BENAR) {
-          document.getElementById("login-screen").style.display = "none";
-          document.getElementById("loading-screen").style.display = "flex";
+        // Gembok tambahan: Fungsi ini HANYA JALAN jika benar-benar ada 4 angka
+        if (pinMasuk.length === 4) {
+          if (pinMasuk === PW) {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("loading-screen").style.display = "flex";
 
-          const audio = document.getElementById("bgm");
-          audio.play().catch((e) => console.log("Audio diblokir: ", e));
+            const audio = document.getElementById("bgm");
+            audio.play().catch((e) => console.log("Audio diblokir: ", e));
 
-          setTimeout(() => {
-            document.getElementById("loading-screen").style.display = "none";
-            document.getElementById("ppt-container").style.display = "block";
-            document.getElementById("footer-nav").style.display = "flex";
-          }, 2000);
-        } else {
-          errorMsg.style.opacity = "1"; pinContainer.classList.add("shake");
-          setTimeout(() => {
-            pinContainer.classList.remove("shake");
-            inputs.forEach((input) => (input.value = ""));
-            inputs[0].focus();
-          }, 400);
+            setTimeout(() => {
+              document.getElementById("loading-screen").style.display = "none";
+              document.getElementById("ppt-container").style.display = "block";
+              document.getElementById("footer-nav").style.display = "flex";
+            }, 2000);
+          } else {
+            errorMsg.style.visibility = "visible";
+            errorMsg.style.opacity = "1";
+            pinContainer.classList.add("shake");
+            
+            setTimeout(() => {
+              pinContainer.classList.remove("shake");
+              inputs.forEach((input) => (input.value = ""));
+              inputs[0].focus();
+            }, 400);
+          }
         }
       }
 
