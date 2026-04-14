@@ -94,7 +94,6 @@
       .pin-box:focus { border-color: var(--heading-color); transform: translateY(-3px); }
       .pin-separator { font-size: 20px; opacity: 0.5; font-weight: bold; margin: 0 2px; }
       
-      /* Visibilitas ditambahkan agar benar-benar hilang dan tidak muncul "hantu" */
       .error-text { color: #ff4d4d; font-size: 13px; height: 20px; opacity: 0; visibility: hidden; transition: opacity 0.3s; margin-top: 10px; font-weight: 600; }
 
       @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
@@ -222,7 +221,7 @@
       
       <div class="slide" id="slide-1">
         <div class="slide-content">
-          <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Kue" />
+          <img src="cake.svg" alt="Kue" />
           <h2>Selamat Ulang Tahun 🎂</h2>
           <p>Semoga di perkuliahan nanti, kamu semakin bahagia, sehat selalu, serta diberi lingkungan pertemanan yang baik.
         </div>
@@ -245,15 +244,36 @@
       <button class="nav-btn" id="next-btn" onclick="gantiSlide(1)">&#10095;</button>
     </div>
 
-    <audio id="bgm" loop><source src="bg.mp3" type="audio/mpeg" /></audio>
+    <audio id="bgm" loop preload="auto"><source src="bg.mp3" type="audio/mpeg" /></audio>
 
     <script>
+      // --- SISTEM PRELOAD GAMBAR SILUMAN ---
+      // Gambar akan diunduh di background segera setelah web terbuka
+      const imagesToPreload = [
+        "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+        // Tambahkan URL gambar lain di sini jika ada, pisahkan dengan koma
+      ];
+      imagesToPreload.forEach(url => {
+        const img = new Image();
+        img.src = url;
+      });
+
       function tutupPopup() {
         const popup = document.getElementById('ux-popup');
         popup.style.opacity = '0';
+        
+        // --- TRIK UNLOCK AUDIO BROWSER ---
+        // Dengan ini kita "memancing" lagu agar terbuka aksesnya dan melakukan buffering
+        // sebelum Silvia benar-benar selesai mengetik PIN.
+        const audio = document.getElementById("bgm");
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch((e) => console.log("Audio unlock tertunda, aman."));
+
         setTimeout(() => {
           popup.style.display = 'none';
-          document.getElementById('pin-0').focus(); // Fokus otomatis ke kotak pertama setelah pop-up hilang
+          document.getElementById('pin-0').focus();
         }, 500);
       }
 
@@ -373,15 +393,12 @@
       const PW = "2404";
       const inputs = document.querySelectorAll(".pin-box");
 
-      // LOGIKA BARU YANG ANTI-ERROR DI HP
       function handleInput(input, index) {
         const errorMsg = document.getElementById("error-msg");
         
-        // Sembunyikan error begitu user mulai ngetik lagi
         errorMsg.style.opacity = "0";
         errorMsg.style.visibility = "hidden";
 
-        // Filter: Hanya angka yang boleh masuk
         input.value = input.value.replace(/[^0-9]/g, "");
 
         if (input.value !== "") {
@@ -393,7 +410,6 @@
         }
       }
 
-      // Memungkinkan tombol "Hapus / Backspace" mundur ke kotak sebelumnya
       function handleBackspace(event, index) {
         if (event.key === "Backspace" && inputs[index].value === "") {
           if (index > 0) {
@@ -408,7 +424,6 @@
         const errorMsg = document.getElementById("error-msg");
         const pinContainer = document.getElementById("pin-container");
 
-        // Gembok tambahan: Fungsi ini HANYA JALAN jika benar-benar ada 4 angka
         if (pinMasuk.length === 4) {
           if (pinMasuk === PW) {
             document.getElementById("login-screen").style.display = "none";
