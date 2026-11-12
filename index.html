@@ -2,463 +2,136 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Last One</title>
     <meta id="meta-theme-color" name="theme-color" content="#c2e9fb" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
-
-    <style>
-      :root {
-        --bg-gradient: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-        --text-color: #2c3e50;
-        --heading-color: #ff6b81;
-        --heading-glow: 0 2px 10px rgba(255, 107, 129, 0.4);
-        --box-bg: rgba(255, 255, 255, 0.8);
-        --footer-bg: rgba(255, 255, 255, 0.8);
-        --border-color: #eaeaea;
-      }
-
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-
-      body {
-        font-family: "Poppins", sans-serif;
-        background: var(--bg-gradient);
-        color: var(--text-color);
-        height: 100dvh;
-        width: 100vw;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: background 1.5s ease-in-out, color 1.5s ease-in-out;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      /* ================= EFEK VISUAL LATAR ================= */
-      #stars-canvas, #sun-glow {
-        position: absolute; top: 0; left: 0; width: 100vw; height: 100dvh;
-        z-index: 1; pointer-events: none; transition: opacity 2s ease-in-out;
-      }
-      #stars-canvas { opacity: 0; }
-      #sun-glow {
-        background: radial-gradient(circle at 90% 10%, rgba(255, 250, 230, 0.85) 0%, rgba(255, 235, 150, 0.4) 40%, transparent 100%);
-        z-index: 2; opacity: 1; 
-      }
-
-      /* ================= KANVAS MATAHARI & BULAN ================= */
-      #celestial-container {
-        position: absolute; top: 0; left: 0; right: 0; height: 100px; pointer-events: none; z-index: 10;
-      }
-      .celestial { position: absolute; top: 20px; transition: opacity 1.5s ease, transform 1.5s ease; }
-      #moonCanvas { left: 20px; }
-      #sunCanvas { right: 20px; }
-
-      /* ================= LAYAR POPUP, LOGIN, LOADING ================= */
-      .overlay-screen {
-        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        z-index: 100; text-align: center; padding: 20px;
-        background: var(--bg-gradient); transition: background 1.5s ease-in-out, opacity 0.5s ease;
-      }
-
-      #ux-popup { z-index: 200; }
-
-      .box-container {
-        background: var(--box-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);
-        transition: background 1.5s ease, box-shadow 1.5s ease;
-      }
-
-      .box-container h2 {
-        margin-bottom: 5px; font-size: 26px;
-        color: var(--heading-color); text-shadow: var(--heading-glow);
-        transition: color 1.5s ease, text-shadow 1.5s ease;
-      }
-      .box-container p { margin-bottom: 25px; font-size: 13px; opacity: 0.8; line-height: 1.5; }
-
-      .btn-primary {
-        background-color: var(--heading-color); color: white; border: none;
-        padding: 12px 25px; border-radius: 12px; font-size: 16px; font-weight: 600;
-        font-family: "Poppins", sans-serif; cursor: pointer;
-        box-shadow: var(--heading-glow); transition: 0.3s; width: 100%;
-      }
-      .btn-primary:hover { transform: translateY(-3px); filter: brightness(1.1); }
-
-      .pin-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; z-index: 110; }
-      
-      .pin-box {
-        width: 50px; height: 60px; font-size: 24px; text-align: center;
-        border: 2px solid var(--border-color); border-radius: 12px; outline: none;
-        background: transparent; color: var(--text-color); font-family: "Poppins", sans-serif; font-weight: 600;
-        transition: all 0.3s ease;
-      }
-      .pin-box:focus { border-color: var(--heading-color); transform: translateY(-3px); }
-      .pin-separator { font-size: 20px; opacity: 0.5; font-weight: bold; margin: 0 2px; }
-      
-      .error-text { color: #ff4d4d; font-size: 13px; height: 20px; opacity: 0; visibility: hidden; transition: opacity 0.3s; margin-top: 10px; font-weight: 600; }
-
-      @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
-      .shake { animation: shake 0.4s ease-in-out; }
-
-      .loading-spinner {
-        border: 5px solid rgba(255, 255, 255, 0.3); border-top: 5px solid var(--heading-color);
-        border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 15px;
-      }
-      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-      /* ================= TATA LETAK PPT ================= */
-      #ppt-container {
-        flex-grow: 1; position: relative; width: 100%; height: calc(100dvh - 70px);
-        display: none; z-index: 20; overflow: hidden;
-      }
-
-      .slide {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
-        padding: 40px 20px; text-align: center; opacity: 0; visibility: hidden;
-        transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; transform: translateY(20px);
-        overflow-y: auto;
-      }
-      .slide.active { opacity: 1; visibility: visible; transform: translateY(0); }
-
-      .slide-content { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; margin: auto; }
-
-      .slide h1, .slide h2 {
-        font-size: 2.2rem; margin-bottom: 15px;
-        color: var(--heading-color); text-shadow: var(--heading-glow);
-        transition: color 1.5s ease, text-shadow 1.5s ease;
-      }
-      .slide p { font-size: 1rem; line-height: 1.6; width: 100%; z-index: 5; margin-bottom: 20px; }
-      
-      .slide img { 
-        max-width: 100%; max-height: 35vh; object-fit: cover; border-radius: 15px; 
-        margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); z-index: 5;
-      }
-
-      /* ================= FOOTER NAVIGASI ================= */
-      #footer-nav {
-        height: 70px; min-height: 70px; background: var(--footer-bg); border-top: 1px solid var(--border-color);
-        display: none; align-items: center; justify-content: space-between; padding: 0 20px;
-        backdrop-filter: blur(5px); z-index: 50; padding-bottom: env(safe-area-inset-bottom);
-        transition: background 1.5s ease, border-color 1.5s ease;
-      }
-
-      .nav-btn {
-        background-color: transparent; color: var(--heading-color); border: 2px solid var(--heading-color);
-        border-radius: 50%; width: 40px; height: 40px; font-size: 18px; font-weight: bold;
-        cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
-        flex-shrink: 0;
-      }
-      .nav-btn:hover { background-color: var(--heading-color); color: white; box-shadow: var(--heading-glow); }
-      .nav-btn:disabled { border-color: gray; color: gray; cursor: not-allowed; background-color: transparent; opacity: 0.5; box-shadow: none; }
-
-      .simulator-control { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-grow: 1; padding: 0 10px;}
-      .simulator-control span { font-size: 11px; font-weight: 600; opacity: 0.8; white-space: nowrap; }
-      .simulator-control input[type="range"] { width: 100%; max-width: 150px; accent-color: var(--heading-color); cursor: pointer; transition: accent-color 1.5s ease; }
-
-      /* ================= MEDIA QUERIES ================= */
-      @media (max-width: 480px) {
-        .box-container { padding: 25px 15px; }
-        .box-container h2 { font-size: 22px; }
-        .pin-box { width: 45px; height: 55px; font-size: 22px; }
-        .slide h1, .slide h2 { font-size: 1.8rem; }
-        .slide p { font-size: 0.95rem; }
-        #celestial-container { height: 80px; }
-        .celestial { top: 10px; width: 60px; height: 60px; }
-      }
-      @media (max-height: 600px) {
-        #celestial-container { display: none; }
-        .box-container { margin-top: -30px; }
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="book.css" />
   </head>
+
   <body>
-    <canvas id="stars-canvas"></canvas>
-    <div id="sun-glow"></div>
+    <canvas id="stars-canvas" aria-hidden="true"></canvas>
+    <div id="sky-glow" aria-hidden="true"></div>
+    <div id="dust" aria-hidden="true"></div>
+    <canvas id="moonCanvas" class="celestial" width="80" height="80" aria-hidden="true"></canvas>
+    <canvas id="sunCanvas" class="celestial" width="80" height="80" aria-hidden="true"></canvas>
 
-    <div id="celestial-container">
-      <canvas id="moonCanvas" class="celestial" width="80" height="80"></canvas>
-      <canvas id="sunCanvas" class="celestial" width="80" height="80"></canvas>
-    </div>
-
+    <!-- ================= POPUP AWAL ================= -->
     <div id="ux-popup" class="overlay-screen">
-      <div class="box-container">
+      <div class="note-card">
+        <div class="seal" aria-hidden="true">🎀</div>
         <h2>Tunggu Sebentar! 🛑</h2>
-        <p style="margin-bottom: 20px;">
-          Agar suara, lagu, dan animasi kado ini berjalan sempurna, sangat disarankan membukanya lewat <b>Browser Utama (Chrome)</b> ya.<br><br>
-          copy <i>https://piscokz.github.io/project-dadakan/</i>
+        <p>
+          Agar suara, lagu, dan animasi kado ini berjalan sempurna, sangat disarankan membukanya lewat <b>Browser Utama (Chrome)</b> ya.
         </p>
-        <button class="btn-primary" onclick="tutupPopup()">Oke, Mengerti! ✨</button>
+        <p class="copy-url">copy <i>https://piscokz.github.io/project-dadakan/</i></p>
+        <button class="btn-primary" id="popupOk">Oke, Mengerti! ✨</button>
       </div>
     </div>
 
-    <div id="login-screen" class="overlay-screen" style="z-index: 100;">
-      <div class="box-container">
+    <!-- ================= LOADING ================= -->
+    <div id="loading-screen" class="overlay-screen" hidden>
+      <div class="loader-book" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="loading-text">Membuka kado... 🎉</div>
+    </div>
+
+    <!-- ================= BUKU ================= -->
+    <main class="stage">
+      <div class="book-wrap">
+        <div class="book" id="book">
+          <aside class="book-left" aria-hidden="true">
+            <span class="corner tl"></span>
+            <span class="corner tr"></span>
+            <span class="corner bl"></span>
+            <span class="corner br"></span>
+            <div class="ribbon"></div>
+            <div class="crest">❦</div>
+            <h1 class="cover-title">The Last One</h1>
+            <p class="cover-name">Silvia</p>
+            <div class="cover-line"></div>
+          </aside>
+
+          <section class="book-right" id="bookRight">
+            <div class="page-base" id="pageBase" aria-live="polite" aria-atomic="true"></div>
+            <div class="page-shade" aria-hidden="true"></div>
+            <button class="page-curl" id="pageCurl" aria-label="Buka halaman berikutnya" tabindex="-1"></button>
+          </section>
+        </div>
+        <div class="book-shadow" aria-hidden="true"></div>
+      </div>
+
+      <nav class="book-nav" aria-label="Navigasi halaman">
+        <button class="nav-btn" id="prevBtn" aria-label="Halaman sebelumnya" disabled>&#10094;</button>
+        <div class="simulator-control">
+          <span id="time-label">Waktu: 12:00</span>
+          <input type="range" id="timeSlider" min="0" max="23" value="12" aria-label="Simulasi jam" />
+        </div>
+        <button class="nav-btn" id="nextBtn" aria-label="Halaman berikutnya">&#10095;</button>
+      </nav>
+    </main>
+
+    <!-- ================= ISI HALAMAN ================= -->
+    <template class="page-tpl" id="tpl-0">
+      <div class="page-inner page-title">
         <h2>Hai! Siapa ini? 👀</h2>
         <p>Masukkan <b>Tanggal</b> dan <b>Bulan</b> lahirmu.<br />(Contoh: 26 Desember = 2612)</p>
-        <div class="pin-container" id="pin-container">
-          <input type="tel" class="pin-box" maxlength="1" id="pin-0" oninput="handleInput(this, 0)" onkeydown="handleBackspace(event, 0)" />
-          <input type="tel" class="pin-box" maxlength="1" id="pin-1" oninput="handleInput(this, 1)" onkeydown="handleBackspace(event, 1)" />
+        <div class="pin-container">
+          <input type="tel" inputmode="numeric" class="pin-box" maxlength="1" aria-label="Digit pertama" />
+          <input type="tel" inputmode="numeric" class="pin-box" maxlength="1" aria-label="Digit kedua" />
           <span class="pin-separator">-</span>
-          <input type="tel" class="pin-box" maxlength="1" id="pin-2" oninput="handleInput(this, 2)" onkeydown="handleBackspace(event, 2)" />
-          <input type="tel" class="pin-box" maxlength="1" id="pin-3" oninput="handleInput(this, 3)" onkeydown="handleBackspace(event, 3)" />
+          <input type="tel" inputmode="numeric" class="pin-box" maxlength="1" aria-label="Digit ketiga" />
+          <input type="tel" inputmode="numeric" class="pin-box" maxlength="1" aria-label="Digit keempat" />
         </div>
-        <p id="error-msg" class="error-text">Ups! Salah, coba ingat lagi ya! 🤭</p>
+        <p class="error-text" role="alert">Ups! Salah, coba ingat lagi ya! 🤭</p>
       </div>
-    </div>
+    </template>
 
-    <div id="loading-screen" class="overlay-screen" style="display: none; z-index: 100;">
-      <div class="loading-spinner"></div>
-      <div class="loading-text" style="font-size: 16px; font-weight: 600">Membuka kado... 🎉</div>
-    </div>
+    <template class="page-tpl" id="tpl-1">
+      <div class="page-inner">
+        <h1>Halo, Silvia ✨</h1>
+        <p>Aku punya sedikit presentasi kecil. Klik panah di bawah ya</p>
+        <span class="folio">02</span>
+      </div>
+    </template>
 
-    <div id="ppt-container">
-      <div class="slide active" id="slide-0">
-        <div class="slide-content">
-          <h1>Halo, Silvia ✨</h1>
-          <p>Aku punya sedikit presentasi kecil. Klik panah di bawah ya</p>
+    <template class="page-tpl" id="tpl-2">
+      <div class="page-inner">
+        <img class="cake" src="cake.svg" alt="Kue" />
+        <h2>Selamat Ulang Tahun 🎂</h2>
+        <p>Semoga di perkuliahan nanti, kamu semakin bahagia, sehat selalu, serta diberi lingkungan pertemanan yang baik.</p>
+        <span class="folio">03</span>
+      </div>
+    </template>
+
+    <template class="page-tpl" id="tpl-3">
+      <div class="page-inner">
+        <h1><i>Yeeeayy!</i> &nbsp;🥳</h1>
+        <p>Jangan lupa habbit baca buku nya dan jangan pikir hasil studi akademik kamu sia-sia yaa ~~ Thankssss!!</p>
+        <span class="folio">04</span>
+      </div>
+    </template>
+
+    <template class="page-tpl" id="tpl-4">
+      <div class="page-inner page-end">
+        <h1>Terima Kasih !</h1>
+        <a class="gift-box" id="giftBox" href="dashboard.html" aria-label="Buka hadiah: dashboard">
+          <span class="teks-hadiah">Hadiah buat kamu<em>Klik hadiahnya</em></span>
+        </a>
+        <div class="page-actions">
+          <a class="btn-primary" href="dashboard.html">Dashboard ✨</a>
+          <button class="btn-ghost" id="restartBtn">🔁 Tonton Lagi</button>
         </div>
+        <span class="folio">05</span>
       </div>
-      
-      <div class="slide" id="slide-1">
-        <div class="slide-content">
-          <img src="cake.svg" alt="Kue" />
-          <h2>Selamat Ulang Tahun 🎂</h2>
-          <p>Semoga di perkuliahan nanti, kamu semakin bahagia, sehat selalu, serta diberi lingkungan pertemanan yang baik.
-        </div>
-      </div>
-      
-      <div class="slide" id="slide-2">
-         <div class="slide-content">
-          <h1><i>Yeeeayy!</i> &nbsp;🥳</h1>
-          <p>Jangan lupa habbit baca buku nya dan jangan pikir hasil studi akademik kamu sia-sia yaa ~~ Thankssss!!</p>
-         </div>
-      </div>
-    </div>
-
-    <div id="footer-nav">
-      <button class="nav-btn" id="prev-btn" onclick="gantiSlide(-1)" disabled>&#10094;</button>
-      <div class="simulator-control">
-        <span id="time-label">Waktu: 12:00</span>
-        <input type="range" id="timeSlider" min="0" max="23" value="12" />
-      </div>
-      <button class="nav-btn" id="next-btn" onclick="gantiSlide(1)">&#10095;</button>
-    </div>
+    </template>
 
     <audio id="bgm" loop preload="auto"><source src="bg.mp3" type="audio/mpeg" /></audio>
 
-    <script>
-      // --- SISTEM PRELOAD GAMBAR SILUMAN ---
-      // Gambar akan diunduh di background segera setelah web terbuka
-      const imagesToPreload = [
-        "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-        // Tambahkan URL gambar lain di sini jika ada, pisahkan dengan koma
-      ];
-      imagesToPreload.forEach(url => {
-        const img = new Image();
-        img.src = url;
-      });
-
-      function tutupPopup() {
-        const popup = document.getElementById('ux-popup');
-        popup.style.opacity = '0';
-        
-        // --- TRIK UNLOCK AUDIO BROWSER ---
-        // Dengan ini kita "memancing" lagu agar terbuka aksesnya dan melakukan buffering
-        // sebelum Silvia benar-benar selesai mengetik PIN.
-        const audio = document.getElementById("bgm");
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch((e) => console.log("Audio unlock tertunda, aman."));
-
-        setTimeout(() => {
-          popup.style.display = 'none';
-          document.getElementById('pin-0').focus();
-        }, 500);
-      }
-
-      function gambarMatahari() {
-        const ctx = document.getElementById("sunCanvas").getContext("2d");
-        ctx.clearRect(0, 0, 80, 80); ctx.translate(40, 40); ctx.strokeStyle = "#FFD700"; ctx.lineWidth = 3;
-        for (let i = 0; i < 8; i++) {
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(35, 0); ctx.stroke(); ctx.rotate(Math.PI / 4);
-        }
-        ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fillStyle = "#FFA500"; ctx.fill(); ctx.strokeStyle = "#FF8C00"; ctx.stroke();
-        ctx.translate(-40, -40);
-      }
-
-      function gambarBulan() {
-        const ctx = document.getElementById("moonCanvas").getContext("2d");
-        ctx.clearRect(0, 0, 80, 80);
-        ctx.beginPath(); ctx.arc(45, 40, 22, 0, Math.PI * 2); ctx.fillStyle = "#F4F6F0"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#FFFFFF";
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.beginPath(); ctx.arc(32, 35, 18, 0, Math.PI * 2); ctx.fillStyle = "#000"; ctx.fill();
-        ctx.globalCompositeOperation = "source-over"; ctx.shadowBlur = 0;
-      }
-      gambarMatahari(); gambarBulan();
-
-      const starCanvas = document.getElementById("stars-canvas");
-      const starCtx = starCanvas.getContext("2d");
-      let stars = [];
-
-      function initStars() {
-        starCanvas.width = window.innerWidth; starCanvas.height = window.innerHeight; stars = [];
-        for (let i = 0; i < 150; i++) {
-          stars.push({
-            x: Math.random() * starCanvas.width, y: Math.random() * starCanvas.height,
-            radius: Math.random() * 1.5, alpha: Math.random(), speed: Math.random() * 0.05,
-          });
-        }
-      }
-
-      function animateStars() {
-        starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height); starCtx.fillStyle = "#FFF";
-        stars.forEach((s) => {
-          starCtx.globalAlpha = s.alpha; starCtx.beginPath(); starCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); starCtx.fill();
-          s.alpha += s.speed; if (s.alpha <= 0 || s.alpha >= 1) s.speed *= -1;
-        });
-        requestAnimationFrame(animateStars);
-      }
-      initStars(); animateStars(); window.addEventListener("resize", initStars);
-
-      const skyPalette = {
-        0: { bg: "linear-gradient(135deg, #020111 0%, #20124d 100%)", text: "#ecf0f1", head: "#a2b9bc", glow: "0 0 15px rgba(162,185,188,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#444", tab: "#020111" },
-        1: { bg: "linear-gradient(135deg, #020111 0%, #19123b 100%)", text: "#ecf0f1", head: "#a2b9bc", glow: "0 0 15px rgba(162,185,188,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#444", tab: "#020111" },
-        2: { bg: "linear-gradient(135deg, #020111 0%, #151030 100%)", text: "#ecf0f1", head: "#a2b9bc", glow: "0 0 15px rgba(162,185,188,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#444", tab: "#020111" },
-        3: { bg: "linear-gradient(135deg, #020111 0%, #120e26 100%)", text: "#ecf0f1", head: "#a2b9bc", glow: "0 0 15px rgba(162,185,188,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#444", tab: "#020111" },
-        4: { bg: "linear-gradient(135deg, #0a081c 0%, #1a1638 100%)", text: "#ecf0f1", head: "#b2c9cc", glow: "0 0 15px rgba(178,201,204,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#444", tab: "#0a081c" },
-        5: { bg: "linear-gradient(135deg, #2c1b4d 0%, #5b3e6c 100%)", text: "#f4f4f4", head: "#f0a8c2", glow: "0 0 15px rgba(240,168,194,0.6)", boxBg: "rgba(20,10,30,0.5)", footBg: "rgba(20,10,30,0.6)", border: "#5b3e6c", tab: "#2c1b4d" },
-        6: { bg: "linear-gradient(135deg, #f2c94c 0%, #f2994a 100%)", text: "#333", head: "#fff", glow: "0 0 15px rgba(255,255,255,0.7)", boxBg: "rgba(255,255,255,0.6)", footBg: "rgba(255,255,255,0.7)", border: "#e8b243", tab: "#f2c94c" },
-        7: { bg: "linear-gradient(135deg, #ffdf8c 0%, #a4d8ff 100%)", text: "#2c3e50", head: "#e67e22", glow: "0 0 15px rgba(230,126,34,0.4)", boxBg: "rgba(255,255,255,0.7)", footBg: "rgba(255,255,255,0.7)", border: "#f0cf7e", tab: "#ffdf8c" },
-        8: { bg: "linear-gradient(135deg, #cde3ff 0%, #89cff0 100%)", text: "#2c3e50", head: "#2980b9", glow: "0 0 12px rgba(41,128,185,0.3)", boxBg: "rgba(255,255,255,0.8)", footBg: "rgba(255,255,255,0.8)", border: "#aecff2", tab: "#cde3ff" },
-        9: { bg: "linear-gradient(135deg, #89cff0 0%, #4facfe 100%)", text: "#112233", head: "#ff6b81", glow: "0 2px 10px rgba(255,107,129,0.3)", boxBg: "rgba(255,255,255,0.85)", footBg: "rgba(255,255,255,0.85)", border: "#7bb7d4", tab: "#89cff0" },
-        10: { bg: "linear-gradient(135deg, #4facfe 0%, #00c6ff 100%)", text: "#112233", head: "#e84393", glow: "0 2px 15px rgba(232,67,147,0.4)", boxBg: "rgba(255,255,255,0.9)", footBg: "rgba(255,255,255,0.9)", border: "#449cdb", tab: "#4facfe" },
-        11: { bg: "linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)", text: "#fff", head: "#ffeaa7", glow: "0 2px 20px rgba(255,234,167,0.7)", boxBg: "rgba(255,255,255,0.2)", footBg: "rgba(255,255,255,0.3)", border: "#00a8ff", tab: "#00c6ff" },
-        12: { bg: "linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%)", text: "#fff", head: "#f1c40f", glow: "0 2px 20px rgba(241,196,15,0.8)", boxBg: "rgba(255,255,255,0.2)", footBg: "rgba(255,255,255,0.3)", border: "#3252d4", tab: "#0052D4" },
-        13: { bg: "linear-gradient(135deg, #0062E6 0%, #33AEFF 100%)", text: "#fff", head: "#f1c40f", glow: "0 2px 20px rgba(241,196,15,0.8)", boxBg: "rgba(255,255,255,0.2)", footBg: "rgba(255,255,255,0.3)", border: "#3252d4", tab: "#0062E6" },
-        14: { bg: "linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)", text: "#fff", head: "#ffeaa7", glow: "0 2px 20px rgba(255,234,167,0.7)", boxBg: "rgba(255,255,255,0.2)", footBg: "rgba(255,255,255,0.3)", border: "#00a8ff", tab: "#00c6ff" },
-        15: { bg: "linear-gradient(135deg, #4facfe 0%, #00c6ff 100%)", text: "#112233", head: "#e84393", glow: "0 2px 15px rgba(232,67,147,0.4)", boxBg: "rgba(255,255,255,0.8)", footBg: "rgba(255,255,255,0.9)", border: "#449cdb", tab: "#4facfe" },
-        16: { bg: "linear-gradient(135deg, #89cff0 0%, #fbd786 100%)", text: "#2c3e50", head: "#d35400", glow: "0 2px 15px rgba(211,84,0,0.4)", boxBg: "rgba(255,255,255,0.7)", footBg: "rgba(255,255,255,0.8)", border: "#a5b4be", tab: "#89cff0" },
-        17: { bg: "linear-gradient(135deg, #f12711 0%, #f5af19 100%)", text: "#fff", head: "#fff", glow: "0 0 20px rgba(255,255,255,0.8)", boxBg: "rgba(50,10,0,0.4)", footBg: "rgba(50,10,0,0.5)", border: "#de381b", tab: "#f12711" },
-        18: { bg: "linear-gradient(135deg, #301847 0%, #c1445f 100%)", text: "#f4f4f4", head: "#ffdfba", glow: "0 0 15px rgba(255,223,186,0.6)", boxBg: "rgba(30,10,20,0.5)", footBg: "rgba(30,10,20,0.6)", border: "#8a4053", tab: "#301847" },
-        19: { bg: "linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)", text: "#f4f4f4", head: "#e0eaf5", glow: "0 0 15px rgba(224,234,245,0.6)", boxBg: "rgba(20,20,30,0.5)", footBg: "rgba(20,20,30,0.6)", border: "#605b73", tab: "#1f1c2c" },
-        20: { bg: "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)", text: "#ecf0f1", head: "#85c1e9", glow: "0 0 15px rgba(133,193,233,0.5)", boxBg: "rgba(0,0,0,0.4)", footBg: "rgba(0,0,0,0.5)", border: "#444", tab: "#0f2027" },
-        21: { bg: "linear-gradient(135deg, #0b171c 0%, #162a31 50%, #1f3c48 100%)", text: "#ecf0f1", head: "#85c1e9", glow: "0 0 15px rgba(133,193,233,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#333", tab: "#0b171c" },
-        22: { bg: "linear-gradient(135deg, #071013 0%, #0d1a1e 50%, #13272f 100%)", text: "#ecf0f1", head: "#a2b9bc", glow: "0 0 15px rgba(162,185,188,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#333", tab: "#071013" },
-        23: { bg: "linear-gradient(135deg, #04080a 0%, #081114 50%, #0b171c 100%)", text: "#ecf0f1", head: "#a2b9bc", glow: "0 0 15px rgba(162,185,188,0.5)", boxBg: "rgba(0,0,0,0.5)", footBg: "rgba(0,0,0,0.6)", border: "#333", tab: "#04080a" },
-      };
-
-      function updateWaktuLingkungan(jam) {
-        const isSiang = jam >= 6 && jam < 18;
-        const sun = document.getElementById("sunCanvas");
-        const moon = document.getElementById("moonCanvas");
-        const starsCanvas = document.getElementById("stars-canvas");
-        const sunGlow = document.getElementById("sun-glow");
-        const timeLabel = document.getElementById("time-label");
-        const metaThemeColor = document.getElementById("meta-theme-color");
-
-        timeLabel.innerText = `Simulasi: ${jam}:00 (${isSiang ? "Siang ☀️" : "Malam 🌙"})`;
-
-        if (isSiang) {
-          sun.style.opacity = "1"; sun.style.transform = "translateY(0) scale(1)";
-          moon.style.opacity = "0"; moon.style.transform = "translateY(-30px) scale(0.5)";
-          starsCanvas.style.opacity = "0"; sunGlow.style.opacity = "1";
-        } else {
-          sun.style.opacity = "0"; sun.style.transform = "translateY(-30px) scale(0.5)";
-          moon.style.opacity = "1"; moon.style.transform = "translateY(0) scale(1)";
-          starsCanvas.style.opacity = "1"; sunGlow.style.opacity = "0";
-        }
-
-        const tema = skyPalette[jam];
-        const root = document.documentElement;
-        
-        root.style.setProperty("--bg-gradient", tema.bg);
-        root.style.setProperty("--text-color", tema.text);
-        root.style.setProperty("--heading-color", tema.head);
-        root.style.setProperty("--heading-glow", tema.glow);
-        root.style.setProperty("--box-bg", tema.boxBg);
-        root.style.setProperty("--footer-bg", tema.footBg);
-        root.style.setProperty("--border-color", tema.border);
-        
-        metaThemeColor.setAttribute("content", tema.tab);
-      }
-
-      const currentHour = new Date().getHours();
-      const timeSlider = document.getElementById("timeSlider");
-      timeSlider.value = currentHour;
-      updateWaktuLingkungan(currentHour);
-
-      timeSlider.addEventListener("input", (e) => { updateWaktuLingkungan(parseInt(e.target.value)); });
-
-      const PW = "2404";
-      const inputs = document.querySelectorAll(".pin-box");
-
-      function handleInput(input, index) {
-        const errorMsg = document.getElementById("error-msg");
-        
-        errorMsg.style.opacity = "0";
-        errorMsg.style.visibility = "hidden";
-
-        input.value = input.value.replace(/[^0-9]/g, "");
-
-        if (input.value !== "") {
-          if (index < 3) {
-            inputs[index + 1].focus();
-          } else {
-            cekPassword();
-          }
-        }
-      }
-
-      function handleBackspace(event, index) {
-        if (event.key === "Backspace" && inputs[index].value === "") {
-          if (index > 0) {
-            inputs[index - 1].focus();
-          }
-        }
-      }
-
-      function cekPassword() {
-        let pinMasuk = ""; 
-        inputs.forEach((input) => (pinMasuk += input.value));
-        const errorMsg = document.getElementById("error-msg");
-        const pinContainer = document.getElementById("pin-container");
-
-        if (pinMasuk.length === 4) {
-          if (pinMasuk === PW) {
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("loading-screen").style.display = "flex";
-
-            const audio = document.getElementById("bgm");
-            audio.play().catch((e) => console.log("Audio diblokir: ", e));
-
-            setTimeout(() => {
-              document.getElementById("loading-screen").style.display = "none";
-              document.getElementById("ppt-container").style.display = "block";
-              document.getElementById("footer-nav").style.display = "flex";
-            }, 2000);
-          } else {
-            errorMsg.style.visibility = "visible";
-            errorMsg.style.opacity = "1";
-            pinContainer.classList.add("shake");
-            
-            setTimeout(() => {
-              pinContainer.classList.remove("shake");
-              inputs.forEach((input) => (input.value = ""));
-              inputs[0].focus();
-            }, 400);
-          }
-        }
-      }
-
-      let slideSaatIni = 0;
-      const totalSlides = document.querySelectorAll(".slide").length;
-      function gantiSlide(arah) {
-        const slides = document.querySelectorAll(".slide"); slides[slideSaatIni].classList.remove("active");
-        slideSaatIni += arah; slides[slideSaatIni].classList.add("active");
-        document.getElementById("prev-btn").disabled = slideSaatIni === 0;
-        document.getElementById("next-btn").disabled = slideSaatIni === totalSlides - 1;
-      }
-    </script>
+    <script src="book.js"></script>
   </body>
 </html>

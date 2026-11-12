@@ -5,11 +5,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Silvia's Dashboard ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 
-<body class="dashboard-body">
+<body class="dashboard-body locked">
     <!-- Password Overlay -->
     <div id="password-overlay" class="password-overlay">
         <div class="password-box">
@@ -27,12 +31,6 @@
     <!-- Audio Elements (Placeholder) -->
     <!-- Ganti 'src' dengan file musik kamu sendiri -->
     <audio id="bgm-happy" loop src="music/happy.mp3"></audio>
-    <audio id="bgm-calm" loop src="music/calm.mp3"></audio>
-    <audio id="bgm-tired" loop src="music/tired.mp3"></audio>
-    <audio id="bgm-sad" loop src="music/sad.mp3"></audio>
-    <audio id="sfx-click" src="music/click.mp3"></audio>
-    <audio id="sfx-rain" loop src="music/rain.mp3"></audio>
-    <audio id="sfx-rain" loop src="music/rain.mp3"></audio>
 
     <div class="dashboard-container">
         <header class="dashboard-header">
@@ -43,10 +41,10 @@
         <section class="mood-section">
             <h2>How are you feeling today?</h2>
             <div class="mood-tracker">
-                <button class="mood-btn" onclick="selectMood('happy')">😆 Happy</button>
-                <button class="mood-btn" onclick="selectMood('calm')">😌 Calm</button>
-                <button class="mood-btn" onclick="selectMood('tired')">😴 Tired</button>
-                <button class="mood-btn" onclick="selectMood('sad')">🥺 Sad</button>
+                <button class="mood-btn" onclick="selectMood('happy', this)">😆 Happy</button>
+                <button class="mood-btn" onclick="selectMood('calm', this)">😌 Calm</button>
+                <button class="mood-btn" onclick="selectMood('tired', this)">😴 Tired</button>
+                <button class="mood-btn" onclick="selectMood('sad', this)">🥺 Sad</button>
             </div>
             <p id="mood-message"></p>
         </section>
@@ -74,6 +72,11 @@
         </div>
     </div>
 
+    <div id="lightbox" class="lightbox" hidden>
+        <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">×</button>
+        <img id="lightboxImg" src="" alt="" />
+    </div>
+
     <script>
         // --- KONFIGURASI PASSWORD ---
         const SECRET_PASSWORD = "ultah"; // <--- GANTI PASSWORD DI SINI
@@ -85,6 +88,7 @@
 
             if (input === SECRET_PASSWORD) {
                 overlay.style.opacity = '0';
+                document.body.classList.remove('locked');
                 setTimeout(() => {
                     overlay.style.display = 'none';
                 }, 500);
@@ -173,40 +177,97 @@
 
         let currentPlayingMood = null;
 
-        function playMoodAudio(mood) {
-            // Always play Click SFX
-            const sfx = document.getElementById('sfx-click');
-            if (sfx) sfx.play().catch(e => console.log("Audio play failed"));
+        /* Bunyi halus dibuat di browser, tanpa file audio tambahan */
+        let audioCtx = null;
+        let rainNode = null;
+        let rainGain = null;
 
-            // If same mood is already playing, don't restart BGM
+        function getAudioCtx() {
+            if (!audioCtx) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                audioCtx = new Ctx();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playClick() {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(760, t);
+            osc.frequency.exponentialRampToValueAtTime(320, t + 0.08);
+            gain.gain.setValueAtTime(0.05, t);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.1);
+        }
+
+        function startRain() {
+            const ctx = getAudioCtx();
+            if (!ctx || rainNode) return;
+            const dur = 3;
+            const buffer = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+
+            const src = ctx.createBufferSource();
+            src.buffer = buffer;
+            src.loop = true;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 1100;
+
+            rainGain = ctx.createGain();
+            rainGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+            rainGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 1.2);
+
+            src.connect(filter).connect(rainGain).connect(ctx.destination);
+            src.start();
+            rainNode = src;
+        }
+
+        function stopRain() {
+            if (!rainNode || !rainGain) return;
+            const ctx = audioCtx;
+            const src = rainNode;
+            const gain = rainGain;
+            rainNode = null;
+            rainGain = null;
+            gain.gain.cancelScheduledValues(ctx.currentTime);
+            gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+            setTimeout(() => { try { src.stop(); } catch (e) {} }, 700);
+        }
+
+        function playMoodAudio(mood) {
+            playClick();
+
             if (currentPlayingMood === mood) return;
 
-            // Stop current audio
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
+                currentAudio = null;
             }
 
-            // Stop Rain SFX if playing
-            const rainSfx = document.getElementById('sfx-rain');
-            if (rainSfx) {
-                rainSfx.pause();
-                rainSfx.currentTime = 0;
-            }
+            stopRain();
 
-            // Play new BGM
-            const bgmId = `bgm-${mood}`;
-            const bgm = document.getElementById(bgmId);
-            if (bgm) {
-                bgm.volume = 0.5;
-                bgm.play().catch(e => console.log("Audio play failed"));
-                currentAudio = bgm;
-            }
-
-            // Play Rain SFX specifically for Sad mood
-            if (mood === 'sad' && rainSfx) {
-                rainSfx.volume = 0.6;
-                rainSfx.play().catch(e => console.log("Rain SFX failed"));
+            if (mood === 'happy') {
+                const bgm = document.getElementById('bgm-happy');
+                if (bgm) {
+                    bgm.volume = 0.5;
+                    bgm.play().catch(e => console.log("Audio play failed"));
+                    currentAudio = bgm;
+                }
+            } else if (mood === 'sad') {
+                startRain();
             }
 
             currentPlayingMood = mood;
@@ -225,7 +286,7 @@
             bgAnim.classList.add(`anim-${mood}`);
         }
 
-        function selectMood(mood) {
+        function selectMood(mood, btn) {
             currentMood = mood;
             const msg = document.getElementById('mood-message');
 
@@ -236,14 +297,46 @@
             else if (mood === 'sad') msg.innerText = "Peluk jauh buat kamu... 🫂";
 
             // Reset active class
-            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
             // Trigger features
             newAffirmation();
             playMoodAudio(mood);
             setMoodBackground(mood);
         }
+
+        // Enter untuk membuka gerbang password
+        document.getElementById('password-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Lightbox galeri
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
+        function closeLightbox() {
+            lightbox.hidden = true;
+            lightboxImg.src = '';
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.gallery-item img').forEach((img) => {
+            img.addEventListener('click', () => {
+                lightboxImg.src = img.currentSrc || img.src;
+                lightboxImg.alt = img.alt;
+                lightbox.hidden = false;
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+        });
     </script>
 </body>
 
