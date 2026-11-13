@@ -17,6 +17,13 @@
     radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, 0.75), transparent 55%),
     repeating-linear-gradient(0deg, rgba(124, 94, 54, 0.045) 0 1px, transparent 1px 30px),
     linear-gradient(100deg, #eadfc6 0%, #f6eeda 10%, #fdf9ef 48%, #f7efdc 88%, #e9dcbd 100%);
+  --target-size: 24px;
+}
+
+@media (pointer: coarse) {
+  :root {
+    --target-size: 44px;
+  }
 }
 
 body.is-night {
@@ -557,6 +564,138 @@ body.is-night #sunCanvas {
   }
   80% {
     transform: translateX(4px);
+  }
+}
+
+/* ---------------- Shortcut Katalog Mini Game ---------------- */
+
+.shortcut-bar {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top, 0px));
+  left: max(16px, env(safe-area-inset-left, 0px));
+  z-index: 25;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.catalog-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: max(38px, var(--target-size));
+  min-inline-size: var(--target-size);
+  padding: 8px 15px;
+  border: 1px solid rgba(255, 232, 184, 0.34);
+  border-radius: 999px;
+  background: rgba(16, 24, 26, 0.58);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
+  color: #f6ecd8;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.catalog-shortcut:hover {
+  transform: translateY(-1px);
+  background: rgba(24, 38, 41, 0.78);
+  border-color: rgba(240, 208, 134, 0.62);
+}
+
+.catalog-shortcut:focus-visible {
+  outline: 3px solid #f0d086;
+  outline-offset: 3px;
+}
+
+.popup-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.popup-shortcut,
+.pin-skip-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-block-size: max(40px, var(--target-size));
+  min-inline-size: var(--target-size);
+  padding: 8px 18px;
+  border: 1px solid rgba(120, 90, 50, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 253, 246, 0.74);
+  color: var(--leather);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.popup-shortcut:hover,
+.pin-skip-link:hover {
+  transform: translateY(-1px);
+  background: #fffdf7;
+  border-color: var(--gold-2);
+}
+
+.popup-shortcut:focus-visible,
+.pin-skip-link:focus-visible {
+  outline: 3px solid var(--leather);
+  outline-offset: 3px;
+}
+
+.pin-skip-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(120, 90, 50, 0.25);
+}
+
+.page-inner .skip-hint {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 520px) {
+  .shortcut-bar {
+    top: max(10px, env(safe-area-inset-top, 0px));
+    left: max(12px, env(safe-area-inset-left, 0px));
+    max-inline-size: calc(100vw - 96px);
+  }
+
+  .catalog-shortcut {
+    padding: 7px 12px;
+    font-size: 0.74rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-shortcut,
+  .popup-shortcut,
+  .pin-skip-link {
+    transition: none;
+  }
+
+  .catalog-shortcut:hover,
+  .popup-shortcut:hover,
+  .pin-skip-link:hover {
+    transform: none;
   }
 }
 
