@@ -3,7 +3,7 @@
    ============================================================ */
 
 const PW = "2404";
-const FALLBACK_COORDS = { lat: -6.2088, lon: 106.8456, city: "Jakarta" };
+const KARAWANG_COORDS = { lat: -6.30525, lon: 107.3197, city: "Karawang" };
 const WEATHER_REFRESH_MS = 10 * 60 * 1000;
 
 const templates = Array.from(document.querySelectorAll("template.page-tpl"));
@@ -25,7 +25,6 @@ const weatherSummary = document.getElementById("weatherSummary");
 const rainProbEl = document.getElementById("rainProb");
 const weatherLocEl = document.getElementById("weatherLoc");
 const modeToggleBtn = document.getElementById("modeToggleBtn");
-const geoBtn = document.getElementById("geoBtn");
 const simDrawer = document.getElementById("simDrawer");
 const timeSlider = document.getElementById("timeSlider");
 const simHourHint = document.getElementById("simHourHint");
@@ -399,9 +398,9 @@ motionQuery.addEventListener("change", (e) => {
 /* ---------------- Data cuaca live, waktu nyata & pemetaan langit ---------------- */
 
 const weatherState = {
-  city: FALLBACK_COORDS.city,
-  lat: FALLBACK_COORDS.lat,
-  lon: FALLBACK_COORDS.lon,
+  city: KARAWANG_COORDS.city,
+  lat: KARAWANG_COORDS.lat,
+  lon: KARAWANG_COORDS.lon,
   utcOffsetSeconds: -new Date().getTimezoneOffset() * 60,
   tzLabel: formatOffsetTz(-new Date().getTimezoneOffset() * 60),
   isLiveMode: true,
@@ -631,30 +630,6 @@ async function fetchJsonWithTimeout(url, timeoutMs = 6000) {
   }
 }
 
-async function detectIpLocation() {
-  try {
-    const geo = await fetchJsonWithTimeout("https://get.geojs.io/v1/ip/geo.json");
-    const lat = Number(geo.latitude);
-    const lon = Number(geo.longitude);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      return { lat, lon, city: geo.city || geo.country || FALLBACK_COORDS.city };
-    }
-  } catch {
-    // Lanjut ke fallback berikutnya
-  }
-
-  try {
-    const who = await fetchJsonWithTimeout("https://ipwho.is/");
-    if (who && who.success !== false && Number.isFinite(who.latitude) && Number.isFinite(who.longitude)) {
-      return { lat: who.latitude, lon: who.longitude, city: who.city || FALLBACK_COORDS.city };
-    }
-  } catch {
-    // Pakai koordinat default
-  }
-
-  return { ...FALLBACK_COORDS };
-}
-
 async function refreshLiveWeather(lat, lon, cityLabel) {
   const params = new URLSearchParams({
     latitude: String(lat),
@@ -705,12 +680,15 @@ async function refreshLiveWeather(lat, lon, cityLabel) {
 
 async function initLiveWeather() {
   applyEnvironment();
-  const loc = await detectIpLocation();
   try {
-    await refreshLiveWeather(loc.lat, loc.lon, loc.city);
+    await refreshLiveWeather(
+      KARAWANG_COORDS.lat,
+      KARAWANG_COORDS.lon,
+      KARAWANG_COORDS.city
+    );
   } catch {
     // Tetap pakai jam perangkat bila API tidak terjangkau
-    weatherState.city = `${loc.city} (Offline)`;
+    weatherState.city = `${KARAWANG_COORDS.city} (Offline)`;
     applyEnvironment();
   }
 }
@@ -728,36 +706,6 @@ timeSlider.addEventListener("input", (e) => {
   weatherState.isLiveMode = false;
   weatherState.simHour = parseInt(e.target.value, 10) || 0;
   applyEnvironment();
-});
-
-geoBtn.addEventListener("click", () => {
-  if (!("geolocation" in navigator)) {
-    weatherLocEl.textContent = "GPS tidak didukung";
-    return;
-  }
-  geoBtn.disabled = true;
-  geoBtn.textContent = "📍 Mencari…";
-
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
-      try {
-        await refreshLiveWeather(pos.coords.latitude, pos.coords.longitude, "Lokasi GPS");
-      } catch {
-        weatherLocEl.textContent = "Gagal muat GPS";
-      } finally {
-        geoBtn.disabled = false;
-        geoBtn.textContent = "📍 GPS";
-      }
-    },
-    () => {
-      geoBtn.disabled = false;
-      geoBtn.textContent = "📍 Izin ditolak";
-      setTimeout(() => {
-        geoBtn.textContent = "📍 GPS";
-      }, 2200);
-    },
-    { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 }
-  );
 });
 
 initLiveWeather();

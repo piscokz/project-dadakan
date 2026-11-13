@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Nocturne Keys — Katalog Mini Game</title>
+  <meta name="theme-color" content="#0d1f21" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  />
+  <link rel="prefetch" href="dashboard.html" as="document" />
+  <link rel="stylesheet" href="dashboard.css?v=3" />
+  <script type="speculationrules">
+    {
+      "prefetch": [
+        {
+          "where": { "selector_matches": "a[href='dashboard.html']" },
+          "eagerness": "moderate"
+        }
+      ]
+    }
+  </script>
+</head>
+
+<body class="catalog-body game-page">
+  <div class="bg-animation" aria-hidden="true"></div>
+
+  <main class="catalog-container">
+    <header class="catalog-header">
+      <nav class="top-nav top-nav--split" aria-label="Navigasi halaman">
+        <a class="back-link" href="dashboard.html">⬅️ Kembali ke Katalog</a>
+        <a class="back-link back-link--subtle" href="index.html">📖 Buka Buku</a>
+      </nav>
+      <h1>Nocturne Keys</h1>
+      <p>Rhythm Tap 4-Lane &bull; Melodi Kotak Musik Kustom</p>
+    </header>
+
+    <section class="arena-section" id="rhythm-arena" aria-labelledby="arena-heading">
+      <h2 id="arena-heading" class="visually-hidden">Arena Permainan Nocturne Keys</h2>
+      <p class="section-sub track-meta-line" id="trackMeta">
+        Melodi Kustom: &ldquo;Nocturne in F Major&rdquo; &bull; 108 BPM &bull; Web Audio Synth
+      </p>
+
+      <div class="arena-toolbar" role="toolbar" aria-label="Kontrol permainan">
+        <div class="speed-group" role="group" aria-label="Pilih tempo lagu">
+          <button type="button" class="speed-btn" data-speed="0.85" aria-pressed="false">Santai 0.85×</button>
+          <button type="button" class="speed-btn is-active" data-speed="1" aria-pressed="true">Normal 1.0×</button>
+          <button type="button" class="speed-btn" data-speed="1.2" aria-pressed="false">Cepat 1.2×</button>
+        </div>
+
+        <div class="action-group">
+          <button type="button" class="btn-primary" id="startPauseBtn">Mulai ▶</button>
+          <button type="button" class="btn-outline" id="restartGameBtn" disabled>Ulangi ↺</button>
+          <button type="button" class="btn-outline" id="muteBtn" aria-pressed="false">Suara: Hidup</button>
+        </div>
+      </div>
+
+      <div class="hud-grid" aria-label="Statistik permainan">
+        <div class="hud-box">
+          <span class="hud-label">Skor</span>
+          <strong class="hud-value" id="hudScore">0</strong>
+        </div>
+        <div class="hud-box">
+          <span class="hud-label">Kombo</span>
+          <strong class="hud-value" id="hudCombo">0</strong>
+        </div>
+        <div class="hud-box">
+          <span class="hud-label">Akurasi</span>
+          <strong class="hud-value" id="hudAccuracy">100%</strong>
+        </div>
+        <div class="hud-box">
+          <span class="hud-label">Terbaik</span>
+          <strong class="hud-value" id="hudBest">0</strong>
+        </div>
+      </div>
+
+      <div class="rhythm-cabinet" id="rhythmCabinet">
+        <div
+          class="song-progress"
+          id="songProgressBar"
+          role="progressbar"
+          aria-label="Progres lagu"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <div class="song-progress-fill" id="songProgressFill"></div>
+        </div>
+
+        <div class="canvas-stage" id="canvasStage">
+          <canvas id="rhythmCanvas" aria-label="Arena not jatuh 4 jalur"></canvas>
+          <div class="stage-overlay" id="stageOverlay">
+            <p class="overlay-kicker">Nada Kustom &bull; F Mayor</p>
+            <h3 id="overlayTitle">Siap Bermain?</h3>
+            <p id="overlayDesc">
+              Tekan tombol <strong>Mulai</strong>, lalu ketuk jalur tepat saat not menyentuh garis emas.
+            </p>
+            <button type="button" class="btn-primary" id="overlayStartBtn">Mulai Lagu ▶</button>
+          </div>
+        </div>
+
+        <div class="lane-pads" role="group" aria-label="Tombol jalur not">
+          <button type="button" class="lane-pad lane-0" data-lane="0" aria-label="Jalur 1, tombol D">
+            <span class="pad-key">D</span>
+            <span class="pad-note">Do &middot; Fa</span>
+          </button>
+          <button type="button" class="lane-pad lane-1" data-lane="1" aria-label="Jalur 2, tombol F">
+            <span class="pad-key">F</span>
+            <span class="pad-note">Sol &middot; La</span>
+          </button>
+          <button type="button" class="lane-pad lane-2" data-lane="2" aria-label="Jalur 3, tombol J">
+            <span class="pad-key">J</span>
+            <span class="pad-note">Si♭ &middot; Do &middot; Re</span>
+          </button>
+          <button type="button" class="lane-pad lane-3" data-lane="3" aria-label="Jalur 4, tombol K">
+            <span class="pad-key">K</span>
+            <span class="pad-note">Mi &middot; Fa &middot; La</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="controls-hint">
+        Keyboard: tekan <kbd>D</kbd> <kbd>F</kbd> <kbd>J</kbd> <kbd>K</kbd> (atau <kbd>Space</kbd> untuk Jeda) &middot; Layar sentuh: ketuk langsung 4 tombol di bawah garis.
+      </p>
+
+      <div id="gameLiveStatus" class="visually-hidden" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <dialog id="resultDialog" closedby="any" aria-labelledby="resultTitle">
+    <div class="result-sheet">
+      <div class="result-grade" id="resultGrade" aria-hidden="true">S</div>
+      <h2 id="resultTitle">Lagu Selesai!</h2>
+      <p class="result-message" id="resultMessage">Permainan yang indah!</p>
+
+      <dl class="result-stats">
+        <div>
+          <dt>Total Skor</dt>
+          <dd id="resScore">0</dd>
+        </div>
+        <div>
+          <dt>Akurasi</dt>
+          <dd id="resAccuracy">0%</dd>
+        </div>
+        <div>
+          <dt>Kombo Maks</dt>
+          <dd id="resMaxCombo">0</dd>
+        </div>
+      </dl>
+
+      <ul class="result-breakdown">
+        <li><span>Perfect</span><strong id="resPerfect">0</strong></li>
+        <li><span>Good</span><strong id="resGood">0</strong></li>
+        <li><span>Miss</span><strong id="resMiss">0</strong></li>
+      </ul>
+
+      <form method="dialog" class="result-actions">
+        <button type="submit" value="replay" class="btn-primary" autofocus>Main Lagi 🔁</button>
+        <button type="submit" value="close" class="btn-outline">Tutup</button>
+      </form>
+    </div>
+  </dialog>
+
+  <script defer src="rhythm.js?v=4"></script>
+  <script defer src="sw-register.js?v=1"></script>
+</body>
+
+</html>

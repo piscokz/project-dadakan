@@ -2,7 +2,7 @@
    Service Worker — Precache aset inti agar interaksi bebas jeda
    ============================================================ */
 
-const CORE_VERSION = "v3";
+const CORE_VERSION = "v4";
 const CORE_CACHE = `dadakan-core-${CORE_VERSION}`;
 const FONT_CACHE = "dadakan-fonts-v1";
 const KEEP_CACHES = new Set([CORE_CACHE, FONT_CACHE]);
@@ -12,11 +12,15 @@ const CORE_ASSETS = [
   "./",
   "./index.html",
   "./dashboard.html",
+  "./nocturne-keys.html",
   "./book.css?v=3",
-  "./book.js?v=3",
-  "./dashboard.css?v=2",
-  "./rhythm.js?v=3",
+  "./book.js?v=4",
+  "./dashboard.css?v=3",
+  "./rhythm.js?v=4",
   "./cake.svg",
+  "./cat-1.mp3",
+  "./cat-2.mp3",
+  "./cat-3.mp3",
   "./sw-register.js?v=1",
 ];
 
@@ -129,7 +133,8 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.endsWith(".mp3")) return;
+  const isCatSfx = /\/cat-\d+\.mp3$/i.test(url.pathname);
+  if (url.pathname.endsWith(".mp3") && !isCatSfx) return;
 
   if (
     request.mode === "navigate" ||
@@ -140,7 +145,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.searchParams.has("v") || url.pathname.endsWith(".svg")) {
+  if (url.searchParams.has("v") || url.pathname.endsWith(".svg") || isCatSfx) {
     event.respondWith(cacheFirst(request, CORE_CACHE));
     return;
   }

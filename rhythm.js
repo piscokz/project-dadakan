@@ -23,6 +23,7 @@
   ];
 
   const KEY_TO_LANE = { d: 0, f: 1, j: 2, k: 3 };
+  const CAT_SFX_PATHS = ["cat-1.mp3", "cat-2.mp3", "cat-3.mp3"];
 
   // Melodi utama [beat, lane(0-3), midiNote]
   // Pemetaan nada naik dari kiri ke kanan:
@@ -76,7 +77,7 @@
 
   // Referensi DOM
   const canvas = document.getElementById("rhythmCanvas");
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas ? canvas.getContext("2d") : null;
   const canvasStage = document.getElementById("canvasStage");
   const stageOverlay = document.getElementById("stageOverlay");
   const overlayTitle = document.getElementById("overlayTitle");
@@ -140,6 +141,12 @@
   let masterGain = null;
   let noiseBuffer = null;
   const activeNodes = new Set();
+  let catArrayBuffers = [];
+  let catAudioBuffers = [];
+  let catBytesPromise = null;
+  let catDecodePromise = null;
+  let activeCatSource = null;
+  let activeCatGain = null;
 
   let rafId = null;
   let schedulerId = null;
@@ -191,8 +198,42 @@
     const records = readBestRecords();
     const forSpeed = records[String(speed)];
     const overall = records.overall;
-    hudBest.textContent = forSpeed ? String(forSpeed.score) : "0";
-    cardBestScore.textContent = overall ? `${overall.score} (${overall.grade})` : "—";
+    if (hudBest) hudBest.textContent = forSpeed ? String(forSpeed.score) : "0";
+    if (cardBestScore) cardBestScore.textContent = overall ? `${overall.score} (${overall.grade})` : "—";
+  }
+
+  // Pada halaman katalog utama, cukup tampilkan skor terbaik lalu hentikan inisialisasi arena
+  if (!canvas || !ctx) {
+    refreshBestDisplays();
+    return;
+  }
+
+  function preloadCatBytes() {
+    if (catBytesPromise) return catBytesPromise;
+    catBytesPromise = Promise.all(
+      CAT_SFX_PATHS.map((url) =>
+        fetch(url)
+          .then((res) => (res.ok ? res.arrayBuffer() : null))
+          .catch(() => null)
+      )
+    ).then((buffers) => {
+      catArrayBuffers = buffers.filter(Boolean);
+      return catArrayBuffers;
+    });
+    return catBytesPromise;
+  }
+
+  function decodeCatBuffers(context) {
+    if (!context || catDecodePromise) return catDecodePromise;
+    catDecodePromise = preloadCatBytes().then((rawList) =>
+      Promise.all(
+        rawList.map((raw) => context.decodeAudioData(raw.slice(0)).catch(() => null))
+      ).then((decoded) => {
+        catAudioBuffers = decoded.filter(Boolean);
+        return catAudioBuffers;
+      })
+    );
+    return catDecodePromise;
   }
 
   function ensureAudio() {
@@ -208,6 +249,7 @@
     if (audioCtx.state === "suspended") {
       audioCtx.resume().catch(() => {});
     }
+    decodeCatBuffers(audioCtx);
     return audioCtx;
   }
 
@@ -288,6 +330,49 @@
     if (!ensureAudio()) return;
     const now = audioCtx.currentTime;
     playSynthTone(180 + lane * 26, now, 0.07, "sine", 0.04, 0.004);
+  }
+
+  function playWrongNoteCat(lane) {
+    if (!ensureAudio()) return;
+    const now = audioCtx.currentTime;
+
+    if (catAudioBuffers.length > 0) {
+      if (activeCatSource && activeCatGain) {
+        try {
+          activeCatGain.gain.cancelScheduledValues(now);
+          activeCatGain.gain.setValueAtTime(Math.max(activeCatGain.gain.value, 0.0001), now);
+          activeCatGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+          activeCatSource.stop(now + 0.04);
+        } catch {
+          // Node sudah berhenti
+        }
+      }
+
+      const buf = catAudioBuffers[Math.floor(Math.random() * catAudioBuffers.length)];
+      const src = audioCtx.createBufferSource();
+      const gain = audioCtx.createGain();
+      src.buffer = buf;
+      src.playbackRate.value = 0.98 + (lane % 4) * 0.02;
+
+      gain.gain.setValueAtTime(0.45, now);
+      src.connect(gain).connect(masterGain);
+
+      activeCatSource = src;
+      activeCatGain = gain;
+      activeNodes.add(src);
+      src.onended = () => {
+        activeNodes.delete(src);
+        if (activeCatSource === src) {
+          activeCatSource = null;
+          activeCatGain = null;
+        }
+      };
+      src.start(now);
+      return;
+    }
+
+    decodeCatBuffers(audioCtx);
+    playSynthTone(560 + lane * 45, now, 0.16, "triangle", 0.09, 0.015);
   }
 
   /* ---------------- Pembangunan Chart & Pengiring ---------------- */
@@ -558,7 +643,7 @@
     }
 
     if (!bestNote || bestDelta > GOOD_WINDOW) {
-      playEmptyTap(laneIndex);
+      playWrongNoteCat(laneIndex);
       return;
     }
 
@@ -693,11 +778,11 @@
     ctx.stroke();
 
     // Reseptor jalur pada garis hit
-    const padRadius = Math.min(20, laneW * 0.22);
+    const padRadius = Math.min(30, Math.max(18, laneW * 0.21));
     for (let i = 0; i < 4; i++) {
       const cx = i * laneW + laneW / 2;
       ctx.strokeStyle = LANE_COLORS[i].edge;
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = Math.max(1.6, padRadius * 0.08);
       ctx.globalAlpha = 0.45 + laneFlash[i] * 0.5;
       ctx.beginPath();
       ctx.arc(cx, hitY, padRadius, 0, Math.PI * 2);
@@ -706,8 +791,9 @@
     ctx.globalAlpha = 1;
 
     // Not jatuh
-    const noteW = Math.min(laneW * 0.72, 92);
-    const noteH = 22;
+    const noteW = Math.min(laneW * 0.76, 136);
+    const noteH = Math.round(Math.min(32, Math.max(22, h * 0.056)));
+    const noteRadius = Math.round(noteH * 0.42);
     for (const n of notes) {
       if (n.hit) continue;
       const dt = n.time - elapsed;
@@ -723,18 +809,19 @@
       ctx.shadowColor = palette.glow;
       ctx.shadowBlur = 12;
       ctx.fillStyle = palette.fill;
-      drawRoundedRect(ctx, x, y - noteH / 2, noteW, noteH, 9);
+      drawRoundedRect(ctx, x, y - noteH / 2, noteW, noteH, noteRadius);
       ctx.fill();
 
       ctx.shadowBlur = 0;
       ctx.strokeStyle = palette.edge;
-      ctx.lineWidth = 1.3;
+      ctx.lineWidth = 1.4;
       ctx.stroke();
       ctx.restore();
     }
 
     // Efek cincin lembut saat not mengenai garis
     const now = performance.now();
+    const ringExpand = Math.max(22, padRadius * 1.15);
     effects = effects.filter((ef) => now - ef.born < 320);
     for (const ef of effects) {
       const p = (now - ef.born) / 320;
@@ -742,9 +829,9 @@
       ctx.save();
       ctx.strokeStyle = ef.color;
       ctx.globalAlpha = (1 - p) * 0.75;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.arc(cx, hitY, padRadius + p * 22, 0, Math.PI * 2);
+      ctx.arc(cx, hitY, padRadius + p * ringExpand, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }
@@ -752,12 +839,14 @@
     // Teks penilaian (PERFECT / GOOD / MISS)
     if (now < lastJudgment.until && lastJudgment.text) {
       const remain = (lastJudgment.until - now) / 520;
+      const judgeFontPx = Math.round(Math.min(26, Math.max(18, w * 0.034)));
+      const judgeY = hitY - Math.max(42, padRadius + 24);
       ctx.save();
       ctx.globalAlpha = Math.min(1, remain * 1.4);
       ctx.fillStyle = lastJudgment.color;
-      ctx.font = '600 18px "Poppins", sans-serif';
+      ctx.font = `600 ${judgeFontPx}px "Poppins", sans-serif`;
       ctx.textAlign = "center";
-      ctx.fillText(lastJudgment.text, w / 2, hitY - 42);
+      ctx.fillText(lastJudgment.text, w / 2, judgeY);
       ctx.restore();
     }
   }
@@ -870,14 +959,14 @@
 
   document.addEventListener("keydown", (e) => {
     if (e.repeat || resultDialog.open) return;
-    if (e.target.matches("input, textarea, select")) return;
+    if (e.target instanceof Element && e.target.matches("input, textarea, select")) return;
 
     const k = e.key.toLowerCase();
     if (k in KEY_TO_LANE) {
       if (state === "playing") e.preventDefault();
       triggerLane(KEY_TO_LANE[k]);
     } else if (e.code === "Space" && (state === "playing" || state === "paused")) {
-      if (e.target.closest("button, a")) return;
+      if (e.target instanceof Element && e.target.closest("button, a")) return;
       e.preventDefault();
       handleStartPause();
     }
@@ -924,6 +1013,7 @@
     window.addEventListener("resize", resizeCanvas);
   }
 
+  preloadCatBytes();
   resetGameState();
   resizeCanvas();
 })();
