@@ -14,7 +14,7 @@
     />
     <link rel="preload" href="cake.svg" as="image" type="image/svg+xml" fetchpriority="low" />
     <link rel="prefetch" href="dashboard.html" as="document" />
-    <link rel="stylesheet" href="book.css?v=2" />
+    <link rel="stylesheet" href="book.css?v=3" />
     <script type="speculationrules">
       {
         "prefetch": [
@@ -33,10 +33,11 @@
     </script>
   </head>
 
-  <body>
+  <body class="has-popup" data-page="0">
     <canvas id="stars-canvas" aria-hidden="true"></canvas>
     <div id="sky-glow" aria-hidden="true"></div>
     <div id="dust" aria-hidden="true"></div>
+    <canvas id="rain-canvas" aria-hidden="true"></canvas>
     <canvas id="moonCanvas" class="celestial" width="80" height="80" aria-hidden="true"></canvas>
     <canvas id="sunCanvas" class="celestial" width="80" height="80" aria-hidden="true"></canvas>
 
@@ -99,9 +100,41 @@
 
       <nav class="book-nav" aria-label="Navigasi halaman">
         <button class="nav-btn" id="prevBtn" aria-label="Halaman sebelumnya" disabled>&#10094;</button>
-        <div class="simulator-control">
-          <span id="time-label">Waktu: 12:00</span>
-          <input type="range" id="timeSlider" min="0" max="23" value="12" aria-label="Simulasi jam" />
+        <div class="weather-clock-control" id="weatherControl">
+          <div class="weather-status-row">
+            <span class="live-badge" id="liveBadge">LIVE</span>
+            <time class="live-clock" id="liveClock">--:--</time>
+            <span class="weather-sep" aria-hidden="true">·</span>
+            <span class="weather-summary" id="weatherSummary">Memuat cuaca…</span>
+          </div>
+          <div class="weather-meta-row">
+            <span class="rain-prob" id="rainProb">Peluang hujan —%</span>
+            <span class="weather-sep" aria-hidden="true">·</span>
+            <span class="weather-loc" id="weatherLoc">Lokasi lokal</span>
+          </div>
+          <div class="weather-actions">
+            <button
+              type="button"
+              class="weather-chip-btn"
+              id="modeToggleBtn"
+              aria-expanded="false"
+              aria-controls="simDrawer"
+            >
+              Simulasi Jam
+            </button>
+            <button
+              type="button"
+              class="weather-chip-btn"
+              id="geoBtn"
+              aria-label="Perbarui cuaca pakai lokasi GPS"
+            >
+              📍 GPS
+            </button>
+          </div>
+          <div class="sim-drawer" id="simDrawer" hidden>
+            <input type="range" id="timeSlider" min="0" max="23" value="12" aria-label="Pilih jam simulasi" />
+            <span class="sim-hour-hint" id="simHourHint">12:00</span>
+          </div>
         </div>
         <button class="nav-btn" id="nextBtn" aria-label="Halaman berikutnya">&#10095;</button>
       </nav>
@@ -171,7 +204,7 @@
 
     <audio id="bgm" loop preload="auto"><source src="bg.mp3" type="audio/mpeg" /></audio>
 
-    <script defer src="book.js?v=2"></script>
+    <script defer src="book.js?v=3"></script>
     <script defer src="sw-register.js?v=1"></script>
   </body>
 </html>

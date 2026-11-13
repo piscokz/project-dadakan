@@ -2,7 +2,7 @@
    Service Worker — Precache aset inti agar interaksi bebas jeda
    ============================================================ */
 
-const CORE_VERSION = "v2";
+const CORE_VERSION = "v3";
 const CORE_CACHE = `dadakan-core-${CORE_VERSION}`;
 const FONT_CACHE = "dadakan-fonts-v1";
 const KEEP_CACHES = new Set([CORE_CACHE, FONT_CACHE]);
@@ -12,10 +12,10 @@ const CORE_ASSETS = [
   "./",
   "./index.html",
   "./dashboard.html",
-  "./book.css?v=2",
-  "./book.js?v=2",
+  "./book.css?v=3",
+  "./book.js?v=3",
   "./dashboard.css?v=2",
-  "./rhythm.js?v=2",
+  "./rhythm.js?v=3",
   "./cake.svg",
   "./sw-register.js?v=1",
 ];

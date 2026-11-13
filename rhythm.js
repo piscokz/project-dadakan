@@ -1,6 +1,6 @@
 /* ============================================================
    Nocturne Keys — Rhythm Tap 4-Lane dengan Nada Kustom
-   Melodi: "Nocturne for Silvia" (F Mayor, 108 BPM, 24 Birama)
+   Melodi: "Nocturne in F Major" (F Mayor, 108 BPM, 24 Birama)
    ============================================================ */
 
 (() => {
@@ -844,7 +844,7 @@
       });
       const effectiveBpm = Math.round(BASE_BPM * speed);
       trackMeta.innerHTML =
-        `Melodi Kustom: &ldquo;Nocturne for Silvia&rdquo; &bull; ${effectiveBpm} BPM &bull; Web Audio Synth`;
+        `Melodi Kustom: &ldquo;Nocturne in F Major&rdquo; &bull; ${effectiveBpm} BPM &bull; Web Audio Synth`;
       resetGameState();
     });
   });
