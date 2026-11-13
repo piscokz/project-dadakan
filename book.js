@@ -339,6 +339,25 @@ function resetPin() {
   if (first) first.focus();
 }
 
+function waitForAudioReady(minMs, maxMs) {
+  const minDelay = new Promise((resolve) => setTimeout(resolve, minMs));
+  const audioReady =
+    audio.readyState >= 3
+      ? Promise.resolve()
+      : new Promise((resolve) => {
+          const done = () => {
+            clearTimeout(capTimer);
+            audio.removeEventListener("canplay", done);
+            audio.removeEventListener("error", done);
+            resolve();
+          };
+          const capTimer = setTimeout(done, maxMs);
+          audio.addEventListener("canplay", done, { once: true });
+          audio.addEventListener("error", done, { once: true });
+        });
+  return Promise.all([minDelay, audioReady]);
+}
+
 function cekPassword() {
   const boxes = pinBoxes();
   const pinMasuk = boxes.map((b) => b.value).join("");
@@ -349,11 +368,11 @@ function cekPassword() {
     audio.play().catch((e) => console.log("Audio diblokir: ", e));
     loadingScreen.hidden = false;
 
-    setTimeout(() => {
+    waitForAudioReady(650, 1800).then(() => {
       loadingScreen.hidden = true;
       locked = false;
       flipTo(1, 1);
-    }, 2000);
+    });
   } else {
     const err = pageBase.querySelector(".error-text");
     if (err) err.classList.add("show");
@@ -418,6 +437,7 @@ pageBase.addEventListener("click", (e) => {
 /* ---------------- Popup awal & audio ---------------- */
 
 popupOk.addEventListener("click", () => {
+  if (audio.readyState === 0) audio.load();
   audio
     .play()
     .then(() => {

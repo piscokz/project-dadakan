@@ -10,8 +10,27 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600&display=swap"
       rel="stylesheet"
+      crossorigin="anonymous"
     />
+    <link rel="preload" href="cake.svg" as="image" type="image/svg+xml" fetchpriority="low" />
+    <link rel="prefetch" href="dashboard.html" as="document" />
     <link rel="stylesheet" href="book.css?v=2" />
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "where": { "selector_matches": "a[href='dashboard.html']" },
+            "eagerness": "eager"
+          }
+        ],
+        "prerender": [
+          {
+            "where": { "selector_matches": "a[href='dashboard.html']" },
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
   </head>
 
   <body>
@@ -121,7 +140,7 @@
 
     <template class="page-tpl" id="tpl-2">
       <div class="page-inner">
-        <img class="cake" src="cake.svg" alt="Kue" />
+        <img class="cake" src="cake.svg" alt="Kue" width="210" height="210" decoding="async" />
         <h2>Selamat Ulang Tahun 🎂</h2>
         <p>Semoga di perkuliahan nanti, kamu semakin bahagia, sehat selalu, serta diberi lingkungan pertemanan yang baik.</p>
         <span class="folio">03</span>
@@ -152,6 +171,7 @@
 
     <audio id="bgm" loop preload="auto"><source src="bg.mp3" type="audio/mpeg" /></audio>
 
-    <script src="book.js?v=2"></script>
+    <script defer src="book.js?v=2"></script>
+    <script defer src="sw-register.js?v=1"></script>
   </body>
 </html>
