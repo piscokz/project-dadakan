@@ -2,342 +2,201 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Silvia's Dashboard ✨</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="dashboard.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Katalog Mini Game — The Last One</title>
+  <meta name="theme-color" content="#0d1f21" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="dashboard.css" />
 </head>
 
-<body class="dashboard-body locked">
-    <!-- Password Overlay -->
-    <div id="password-overlay" class="password-overlay">
-        <div class="password-box">
-            <h2>🔒 Locked for Silvia</h2>
-            <p>Masukkan password rahasia untuk masuk ke safe space ini.</p>
-            <input type="password" id="password-input" placeholder="Password...">
-            <button onclick="checkPassword()">Buka 🗝️</button>
-            <p id="password-error" style="color: red; display: none;">Password salah! Coba lagi.</p>
+<body class="catalog-body">
+  <div class="bg-animation" aria-hidden="true"></div>
+
+  <main class="catalog-container">
+    <header class="catalog-header">
+      <nav class="top-nav" aria-label="Navigasi halaman">
+        <a class="back-link" href="index.html">⬅️ Kembali ke Buku</a>
+      </nav>
+      <h1>Katalog Mini Game</h1>
+      <p>Koleksi permainan kecil spesial untuk Silvia ✨</p>
+    </header>
+
+    <section class="catalog-section" aria-labelledby="catalog-heading">
+      <div class="section-head">
+        <h2 id="catalog-heading">Daftar Permainan</h2>
+        <p class="section-sub">Pilih permainan yang sudah tersedia di rak kado.</p>
+      </div>
+
+      <div class="catalog-grid">
+        <article class="game-card game-card--active">
+          <div class="game-card-top">
+            <span class="game-badge game-badge--live">Tersedia</span>
+            <span class="game-genre">Musik &amp; Ritme</span>
+          </div>
+          <h3>Nocturne Keys</h3>
+          <p>
+            Ketuk 4 jalur not jatuh mengikuti alunan melodi kotak musik kustom
+            <em>&ldquo;Nocturne for Silvia&rdquo;</em>.
+          </p>
+          <dl class="card-stats">
+            <div>
+              <dt>Kontrol</dt>
+              <dd>D · F · J · K / Tap</dd>
+            </div>
+            <div>
+              <dt>Skor Terbaik</dt>
+              <dd id="cardBestScore">—</dd>
+            </div>
+          </dl>
+          <a class="btn-card-play" href="#rhythm-arena" id="jumpToGameBtn">Mainkan Sekarang ▶</a>
+        </article>
+
+        <article class="game-card game-card--soon" aria-disabled="true">
+          <div class="game-card-top">
+            <span class="game-badge game-badge--soon">Segera Hadir</span>
+            <span class="game-genre">Slot #02</span>
+          </div>
+          <h3>Rak Berikutnya</h3>
+          <p>Ruang khusus yang disiapkan untuk mini-game berikutnya di katalog.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="arena-section" id="rhythm-arena" aria-labelledby="arena-heading">
+      <div class="section-head">
+        <h2 id="arena-heading">Nocturne Keys — Rhythm Tap 4-Lane</h2>
+        <p class="section-sub" id="trackMeta">
+          Melodi Kustom: &ldquo;Nocturne for Silvia&rdquo; &bull; 108 BPM &bull; Web Audio Synth
+        </p>
+      </div>
+
+      <div class="arena-toolbar" role="toolbar" aria-label="Kontrol permainan">
+        <div class="speed-group" role="group" aria-label="Pilih tempo lagu">
+          <button type="button" class="speed-btn" data-speed="0.85" aria-pressed="false">Santai 0.85×</button>
+          <button type="button" class="speed-btn is-active" data-speed="1" aria-pressed="true">Normal 1.0×</button>
+          <button type="button" class="speed-btn" data-speed="1.2" aria-pressed="false">Cepat 1.2×</button>
         </div>
-    </div>
 
-    <!-- Background Animation Layer -->
-    <div id="bg-animation" class="bg-animation"></div>
-
-    <!-- Audio Elements (Placeholder) -->
-    <!-- Ganti 'src' dengan file musik kamu sendiri -->
-    <audio id="bgm-happy" loop src="music/happy.mp3"></audio>
-
-    <div class="dashboard-container">
-        <header class="dashboard-header">
-            <h1>Hi, Silvia! 💖</h1>
-            <p>Welcome to your safe space ✨</p>
-        </header>
-
-        <section class="mood-section">
-            <h2>How are you feeling today?</h2>
-            <div class="mood-tracker">
-                <button class="mood-btn" onclick="selectMood('happy', this)">😆 Happy</button>
-                <button class="mood-btn" onclick="selectMood('calm', this)">😌 Calm</button>
-                <button class="mood-btn" onclick="selectMood('tired', this)">😴 Tired</button>
-                <button class="mood-btn" onclick="selectMood('sad', this)">🥺 Sad</button>
-            </div>
-            <p id="mood-message"></p>
-        </section>
-
-        <section class="affirmation-section">
-            <div class="affirmation-card">
-                <h3>✨ Daily Affirmation ✨</h3>
-                <p id="affirmation-text">"You are capable of amazing things."</p>
-                <!-- Tombol New Quote dihapus sesuai request -->
-            </div>
-        </section>
-
-        <section class="gallery-section">
-            <h2>Mini Gallery 📸</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item"><img src="ipi_4.jpg" alt="Memory 1"></div>
-                <div class="gallery-item"><img src="ipi_2.jpg" alt="Memory 2"></div>
-                <div class="gallery-item"><img src="ipi_3.jpeg" alt="Memory 3"></div>
-                <div class="gallery-item"><img src="hope.png" alt="Memory 4"></div>
-            </div>
-        </section>
-
-        <div class="back-home">
-            <a href="index.html"><button>⬅️ Back to Surprise</button></a>
+        <div class="action-group">
+          <button type="button" class="btn-primary" id="startPauseBtn">Mulai ▶</button>
+          <button type="button" class="btn-outline" id="restartGameBtn" disabled>Ulangi ↺</button>
+          <button type="button" class="btn-outline" id="muteBtn" aria-pressed="false">Suara: Hidup</button>
         </div>
+      </div>
+
+      <div class="hud-grid" aria-label="Statistik permainan">
+        <div class="hud-box">
+          <span class="hud-label">Skor</span>
+          <strong class="hud-value" id="hudScore">0</strong>
+        </div>
+        <div class="hud-box">
+          <span class="hud-label">Kombo</span>
+          <strong class="hud-value" id="hudCombo">0</strong>
+        </div>
+        <div class="hud-box">
+          <span class="hud-label">Akurasi</span>
+          <strong class="hud-value" id="hudAccuracy">100%</strong>
+        </div>
+        <div class="hud-box">
+          <span class="hud-label">Terbaik</span>
+          <strong class="hud-value" id="hudBest">0</strong>
+        </div>
+      </div>
+
+      <div class="rhythm-cabinet" id="rhythmCabinet">
+        <div
+          class="song-progress"
+          id="songProgressBar"
+          role="progressbar"
+          aria-label="Progres lagu"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <div class="song-progress-fill" id="songProgressFill"></div>
+        </div>
+
+        <div class="canvas-stage" id="canvasStage">
+          <canvas id="rhythmCanvas" aria-label="Arena not jatuh 4 jalur"></canvas>
+          <div class="stage-overlay" id="stageOverlay">
+            <p class="overlay-kicker">Nada Kustom • F Mayor</p>
+            <h3 id="overlayTitle">Siap Bermain?</h3>
+            <p id="overlayDesc">
+              Tekan tombol <strong>Mulai</strong>, lalu ketuk jalur tepat saat not menyentuh garis emas.
+            </p>
+            <button type="button" class="btn-primary" id="overlayStartBtn">Mulai Lagu ▶</button>
+          </div>
+        </div>
+
+        <div class="lane-pads" role="group" aria-label="Tombol jalur not">
+          <button type="button" class="lane-pad lane-0" data-lane="0" aria-label="Jalur 1, tombol D">
+            <span class="pad-key">D</span>
+            <span class="pad-note">Do · Fa</span>
+          </button>
+          <button type="button" class="lane-pad lane-1" data-lane="1" aria-label="Jalur 2, tombol F">
+            <span class="pad-key">F</span>
+            <span class="pad-note">Sol · La</span>
+          </button>
+          <button type="button" class="lane-pad lane-2" data-lane="2" aria-label="Jalur 3, tombol J">
+            <span class="pad-key">J</span>
+            <span class="pad-note">Si♭ · Do · Re</span>
+          </button>
+          <button type="button" class="lane-pad lane-3" data-lane="3" aria-label="Jalur 4, tombol K">
+            <span class="pad-key">K</span>
+            <span class="pad-note">Mi · Fa · La</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="controls-hint">
+        Keyboard: tekan <kbd>D</kbd> <kbd>F</kbd> <kbd>J</kbd> <kbd>K</kbd> (atau <kbd>Space</kbd> untuk Jeda) · Layar sentuh: ketuk langsung 4 tombol di bawah garis.
+      </p>
+
+      <div id="gameLiveStatus" class="visually-hidden" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <dialog id="resultDialog" closedby="any" aria-labelledby="resultTitle">
+    <div class="result-sheet">
+      <div class="result-grade" id="resultGrade" aria-hidden="true">S</div>
+      <h2 id="resultTitle">Lagu Selesai!</h2>
+      <p class="result-message" id="resultMessage">Permainan yang indah!</p>
+
+      <dl class="result-stats">
+        <div>
+          <dt>Total Skor</dt>
+          <dd id="resScore">0</dd>
+        </div>
+        <div>
+          <dt>Akurasi</dt>
+          <dd id="resAccuracy">0%</dd>
+        </div>
+        <div>
+          <dt>Kombo Maks</dt>
+          <dd id="resMaxCombo">0</dd>
+        </div>
+      </dl>
+
+      <ul class="result-breakdown">
+        <li><span>Perfect</span><strong id="resPerfect">0</strong></li>
+        <li><span>Good</span><strong id="resGood">0</strong></li>
+        <li><span>Miss</span><strong id="resMiss">0</strong></li>
+      </ul>
+
+      <form method="dialog" class="result-actions">
+        <button type="submit" value="replay" class="btn-primary" autofocus>Main Lagi 🔁</button>
+        <button type="submit" value="close" class="btn-outline">Tutup</button>
+      </form>
     </div>
+  </dialog>
 
-    <div id="lightbox" class="lightbox" hidden>
-        <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">×</button>
-        <img id="lightboxImg" src="" alt="" />
-    </div>
-
-    <script>
-        // --- KONFIGURASI PASSWORD ---
-        const SECRET_PASSWORD = "ultah"; // <--- GANTI PASSWORD DI SINI
-
-        function checkPassword() {
-            const input = document.getElementById('password-input').value;
-            const overlay = document.getElementById('password-overlay');
-            const errorMsg = document.getElementById('password-error');
-
-            if (input === SECRET_PASSWORD) {
-                overlay.style.opacity = '0';
-                document.body.classList.remove('locked');
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 500);
-                // Play default BGM if needed or wait for mood selection
-            } else {
-                errorMsg.style.display = 'block';
-                // Shake animation effect
-                const box = document.querySelector('.password-box');
-                box.classList.add('shake');
-                setTimeout(() => box.classList.remove('shake'), 500);
-            }
-        }
-
-        // Database Quotes "AI"
-        const quotesDb = {
-            happy: [
-                "Senyummu itu nular loh! Teruslah bersinar! ✨",
-                "Energi positifmu hari ini luar biasa! Pertahankan! 🚀",
-                "Dunia butuh lebih banyak orang sepertimu. 💖",
-                "Hari ini adalah hari yang tepat untuk membuat keajaiban! 🌟",
-                "Kamu terlihat sangat bahagia, dan itu membuatku ikut bahagia! 😊"
-            ],
-            calm: [
-                "Tarik napas dalam-dalam, hembuskan perlahan... 🍃",
-                "Ketenangan adalah kekuatan supermu hari ini. 🧘‍♀️",
-                "Nikmati setiap detik kedamaian ini. Kamu pantas mendapatkannya. 🍵",
-                "Semuanya berjalan sesuai waktunya. Percayalah pada prosesnya. 🌊",
-                "Hati yang tenang melihat dunia dengan lebih jernih. 🕊️"
-            ],
-            tired: [
-                "Hei, gapapa kok buat istirahat. Kamu bukan robot. 🤖💤",
-                "Recharge dulu energinya. Besok kita gas lagi! ⚡",
-                "Tidur yang cukup adalah bentuk self-love terbaik saat ini. 🛌",
-                "Kamu sudah berusaha keras. Bangga banget sama kamu! 🏆",
-                "Dunia gak akan runtuh kalau kamu rebahan sebentar. 🛋️"
-            ],
-            sad: [
-                "Gapapa kalau lagi sedih. Keluarin aja semuanya. 🌧️",
-                "Ingat ya, badai pasti berlalu. Pelangi nunggu di ujung sana. 🌈",
-                "Aku di sini, mengirim peluk virtual buat kamu. 🫂",
-                "Kamu lebih kuat dari yang kamu kira. Bertahan ya! 💪",
-                "Hari yang berat bukan berarti hidup yang buruk. Besok harapan baru. 🌅"
-            ],
-            default: [
-                "Kamu itu unik dan berharga. Jangan lupa itu! 💎",
-                "Setiap langkah kecil membawamu lebih dekat ke tujuan. 👣",
-                "Jadilah alasan seseorang tersenyum hari ini. 😊",
-                "Keajaiban ada di mana-mana, coba lihat sekelilingmu. ✨"
-            ]
-        };
-
-        let currentMood = 'default';
-        let isTyping = false;
-        let currentAudio = null;
-
-        function typeWriter(text, elementId, speed = 50) {
-            if (isTyping) return; // Prevent overlapping
-            isTyping = true;
-            const element = document.getElementById(elementId);
-            element.innerHTML = "";
-            let i = 0;
-
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                } else {
-                    isTyping = false;
-                }
-            }
-            type();
-        }
-
-        function getQuote(mood) {
-            const pool = quotesDb[mood] || quotesDb['default'];
-            const randomIndex = Math.floor(Math.random() * pool.length);
-            return pool[randomIndex];
-        }
-
-        function newAffirmation() {
-            if (isTyping) return;
-            const quote = getQuote(currentMood);
-            typeWriter(`"${quote}"`, 'affirmation-text');
-        }
-
-        let currentPlayingMood = null;
-
-        /* Bunyi halus dibuat di browser, tanpa file audio tambahan */
-        let audioCtx = null;
-        let rainNode = null;
-        let rainGain = null;
-
-        function getAudioCtx() {
-            if (!audioCtx) {
-                const Ctx = window.AudioContext || window.webkitAudioContext;
-                if (!Ctx) return null;
-                audioCtx = new Ctx();
-            }
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return audioCtx;
-        }
-
-        function playClick() {
-            const ctx = getAudioCtx();
-            if (!ctx) return;
-            const t = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(760, t);
-            osc.frequency.exponentialRampToValueAtTime(320, t + 0.08);
-            gain.gain.setValueAtTime(0.05, t);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-            osc.connect(gain).connect(ctx.destination);
-            osc.start(t);
-            osc.stop(t + 0.1);
-        }
-
-        function startRain() {
-            const ctx = getAudioCtx();
-            if (!ctx || rainNode) return;
-            const dur = 3;
-            const buffer = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-
-            const src = ctx.createBufferSource();
-            src.buffer = buffer;
-            src.loop = true;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 1100;
-
-            rainGain = ctx.createGain();
-            rainGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-            rainGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 1.2);
-
-            src.connect(filter).connect(rainGain).connect(ctx.destination);
-            src.start();
-            rainNode = src;
-        }
-
-        function stopRain() {
-            if (!rainNode || !rainGain) return;
-            const ctx = audioCtx;
-            const src = rainNode;
-            const gain = rainGain;
-            rainNode = null;
-            rainGain = null;
-            gain.gain.cancelScheduledValues(ctx.currentTime);
-            gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-            setTimeout(() => { try { src.stop(); } catch (e) {} }, 700);
-        }
-
-        function playMoodAudio(mood) {
-            playClick();
-
-            if (currentPlayingMood === mood) return;
-
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-                currentAudio = null;
-            }
-
-            stopRain();
-
-            if (mood === 'happy') {
-                const bgm = document.getElementById('bgm-happy');
-                if (bgm) {
-                    bgm.volume = 0.5;
-                    bgm.play().catch(e => console.log("Audio play failed"));
-                    currentAudio = bgm;
-                }
-            } else if (mood === 'sad') {
-                startRain();
-            }
-
-            currentPlayingMood = mood;
-        }
-
-        function setMoodBackground(mood) {
-            const body = document.body;
-            const bgAnim = document.getElementById('bg-animation');
-
-            // Reset classes
-            body.className = 'dashboard-body';
-            bgAnim.className = 'bg-animation';
-
-            // Add mood class
-            body.classList.add(`mood-${mood}`);
-            bgAnim.classList.add(`anim-${mood}`);
-        }
-
-        function selectMood(mood, btn) {
-            currentMood = mood;
-            const msg = document.getElementById('mood-message');
-
-            // Mood reaction text
-            if (mood === 'happy') msg.innerText = "Seneng banget liat kamu happy! ☀️";
-            else if (mood === 'calm') msg.innerText = "Adem banget ya rasanya... 🍃";
-            else if (mood === 'tired') msg.innerText = "Sini, istirahat dulu yuk. 💤";
-            else if (mood === 'sad') msg.innerText = "Peluk jauh buat kamu... 🫂";
-
-            // Reset active class
-            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Trigger features
-            newAffirmation();
-            playMoodAudio(mood);
-            setMoodBackground(mood);
-        }
-
-        // Enter untuk membuka gerbang password
-        document.getElementById('password-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') checkPassword();
-        });
-
-        // Lightbox galeri
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-
-        function closeLightbox() {
-            lightbox.hidden = true;
-            lightboxImg.src = '';
-            document.body.style.overflow = '';
-        }
-
-        document.querySelectorAll('.gallery-item img').forEach((img) => {
-            img.addEventListener('click', () => {
-                lightboxImg.src = img.currentSrc || img.src;
-                lightboxImg.alt = img.alt;
-                lightbox.hidden = false;
-                document.body.style.overflow = 'hidden';
-            });
-        });
-
-        document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) closeLightbox();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
-        });
-    </script>
+  <script src="rhythm.js"></script>
 </body>
 
 </html>
